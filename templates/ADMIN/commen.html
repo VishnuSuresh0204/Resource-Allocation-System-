@@ -22,65 +22,73 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: var(--bg); color: var(--text-main); font-family: 'Inter', sans-serif; }
 
-        .dashboard-wrapper { display: flex; min-height: 100vh; }
+        .dashboard-wrapper { display: flex; flex-direction: column; min-height: 100vh; }
 
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
+        /* Top Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             background: var(--sidebar);
-            border-right: 1px solid var(--border);
-            padding: 2rem 1.5rem;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
+            padding: 0.75rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            border-bottom: 1px solid var(--border);
         }
 
         .logo {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 800;
             color: var(--primary);
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 3rem;
         }
 
-        .nav-group { margin-bottom: 2rem; }
-        .nav-group-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-            padding-left: 0.5rem;
+        .nav-links {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 0.75rem 1rem;
+            gap: 8px;
+            padding: 0.5rem 0.8rem;
             text-decoration: none;
             color: #94a3b8;
             font-weight: 500;
-            border-radius: 10px;
-            margin-bottom: 0.25rem;
-            font-size: 0.9rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
         }
 
-        .nav-link i { font-size: 1.1rem; width: 20px; text-align: center; }
+        .nav-link i { font-size: 0.95rem; width: 16px; text-align: center; }
         .nav-link:hover, .nav-link.active {
             background: rgba(255, 255, 255, 0.08);
             color: #ffffff;
         }
 
+        .logout-btn {
+            color: #f87171 !important;
+        }
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.15) !important;
+            color: #f87171 !important;
+        }
+
         /* Main Content */
         .main-content {
-            margin-left: 280px;
             flex: 1;
-            padding: 2.5rem 3rem;
+            padding: 2.5rem 5%;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .page-header {
@@ -147,48 +155,39 @@
         .badge-info { background: #e0f2fe; color: #0369a1; }
         .badge-success { background: #dcfce7; color: #15803d; }
 
-        @media (max-width: 1024px) {
-            .sidebar { width: 80px; padding: 2rem 0.5rem; }
-            .sidebar .logo span, .sidebar .nav-group-title, .sidebar .nav-link span { display: none; }
-            .main-content { margin-left: 80px; }
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; gap: 10px; padding: 1rem; }
+            .nav-links { flex-wrap: wrap; justify-content: center; }
+            .nav-link span { display: none; }
         }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <div class="dashboard-wrapper">
-        <aside class="sidebar">
+        <header class="navbar">
             <a href="/admin_home/" class="logo">
                 <i class="fas fa-boxes-stacked"></i>
                 <span>ERA ADMIN</span>
             </a>
 
-            <div class="nav-group">
-                <div class="nav-group-title">Overview</div>
+            <div class="nav-links">
                 <a href="/admin_home/" class="nav-link {% if request.path == '/admin_home/' %}active{% endif %}">
                     <i class="fas fa-chart-pie"></i><span>Dashboard</span>
                 </a>
-            </div>
-
-            <div class="nav-group">
-                <div class="nav-group-title">User Management</div>
                 <a href="/admin_manage_districts/" class="nav-link"><i class="fas fa-map"></i><span>Districts</span></a>
                 <a href="/admin_manage_staff/" class="nav-link"><i class="fas fa-user-shield"></i><span>District Officers</span></a>
                 <a href="/admin_approve_volunteers/" class="nav-link"><i class="fas fa-user-group"></i><span>Volunteers</span></a>
-            </div>
-
-            <div class="nav-group">
-                <div class="nav-group-title">Resources</div>
                 <a href="/admin_manage_resource_categories/" class="nav-link"><i class="fas fa-tags"></i><span>Categories</span></a>
                 <a href="/admin_view_resource_stock/" class="nav-link"><i class="fas fa-warehouse"></i><span>Stock Monitoring</span></a>
             </div>
 
-            <div style="margin-top: auto; padding-top: 2rem;">
-                <a href="/logout/" class="nav-link" style="color: #ef4444;">
+            <div>
+                <a href="/logout/" class="nav-link logout-btn">
                     <i class="fas fa-sign-out-alt"></i><span>Logout</span>
                 </a>
             </div>
-        </aside>
+        </header>
 
         <main class="main-content">
             {% if messages %}
