@@ -1,0 +1,30 @@
+{% extends 'ADMIN/commen.html' %}
+
+{% block admin_body %}
+<div class="page-header">
+    <h1>Resource Categories</h1>
+    <a href="/admin_manage_resource_categories/" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h3 style="font-family: 'Outfit'; margin-bottom: 1.5rem;">Add New Category</h3>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Category Name</label>
+            <input type="text" name="name" class="form-control" required placeholder="e.g., Medical Supplies, Drinking Water">
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea name="description" class="form-control" rows="3" placeholder="Define what items fall under this category..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Category Icon (Optional)</label>
+            <input type="file" name="icon" class="form-control" accept="image/*">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1rem; margin-top: 1rem;">
+            Create Category
+        </button>
+    </form>
+</div>
+{% endblock %}
