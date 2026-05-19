@@ -1,0 +1,92 @@
+{% extends 'CITIZEN/commen.html' %}
+
+{% block citizen_body %}
+<div class="page-header">
+    <h1 style="font-family: 'Outfit';">Request Emergency Resources</h1>
+    <a href="/citizen_view_resource_requests/" class="btn btn-outline"><i class="fas fa-list"></i> View My Requests</a>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem;">
+    <div>
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; font-family: 'Outfit';"><i class="fas fa-circle-info" style="color: var(--primary);"></i> How it Works</h3>
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <div style="display: flex; gap: 15px;">
+                    <div style="width: 30px; height: 30px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">1</div>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Select the category of resources you need (Food, Water, Medicine, etc.)</p>
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <div style="width: 30px; height: 30px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">2</div>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Provide your precise location and the quantity required.</p>
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <div style="width: 30px; height: 30px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">3</div>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">District officers will verify the stock and dispatch a volunteer for delivery.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="background: #eff6ff; border-color: #bfdbfe;">
+            <h4 style="margin-bottom: 0.5rem; color: var(--primary);"><i class="fas fa-truck-fast"></i> Delivery Priority</h4>
+            <p style="font-size: 0.85rem; color: #1e40af; line-height: 1.5;">Requests marked as <strong>'Critical'</strong> or <strong>'High'</strong> priority are processed first. Please be honest with your needs to help us save lives efficiently.</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <form method="POST">
+            {% csrf_token %}
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label>Resource Category</label>
+                    <select name="category" class="form-control" required style="appearance: auto; color: var(--text-main) !important;">
+                        <option value="">Select Resource Type</option>
+                        {% for c in categories %}
+                        <option value="{{ c.id }}">{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Quantity Needed</label>
+                    <input type="text" name="quantity" class="form-control" required placeholder="e.g., 5 Liters, 2 Boxes">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Priority Level</label>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                    <label style="border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; text-align: center; font-size: 0.8rem;">
+                        <input type="radio" name="priority" value="Critical" required style="width: auto; margin-bottom: 5px;">
+                        <div style="color: #ef4444; font-weight: 700;">Critical</div>
+                    </label>
+                    <label style="border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; text-align: center; font-size: 0.8rem;">
+                        <input type="radio" name="priority" value="High" style="width: auto; margin-bottom: 5px;">
+                        <div style="color: #f59e0b; font-weight: 700;">High</div>
+                    </label>
+                    <label style="border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; text-align: center; font-size: 0.8rem;">
+                        <input type="radio" name="priority" value="Medium" style="width: auto; margin-bottom: 5px;" checked>
+                        <div style="color: #3b82f6; font-weight: 700;">Medium</div>
+                    </label>
+                    <label style="border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; text-align: center; font-size: 0.8rem;">
+                        <input type="radio" name="priority" value="Low" style="width: auto; margin-bottom: 5px;">
+                        <div style="color: #10b981; font-weight: 700;">Low</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Delivery Address / Location Details</label>
+                <textarea name="location" class="form-control" rows="2" required placeholder="Apartment number, building name, street, landmarks..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Additional Information</label>
+                <textarea name="description" class="form-control" rows="3" placeholder="Any specific requirements or notes for the delivery team..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1.2rem; font-size: 1.1rem; font-weight: 700; margin-top: 1rem;">
+                SEND RESOURCE REQUEST
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'CITIZEN/commen.html' %}
+
+{% block citizen_body %}
+<div class="page-header">
+    <h1 style="font-family: 'Outfit';">My Resource Requests</h1>
+    <a href="/citizen_request_resource/" class="btn btn-primary"><i class="fas fa-plus"></i> New Request</a>
+</div>
+
+<div class="card">
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date & ID</th>
+                    <th>Resource Type</th>
+                    <th>Quantity</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in requests %}
+                <tr>
+                    <td>
+                        <div style="font-weight: 700;">#REQ-{{ r.id }}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">{{ r.requested_at|date:"M d, Y H:i" }}</div>
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-box-open" style="color: var(--primary);"></i>
+                            <span>{{ r.category.name }}</span>
+                        </div>
+                    </td>
+                    <td><strong>{{ r.quantity_needed }}</strong></td>
+                    <td>
+                        <span class="badge" style="background: {% if r.priority == 'Critical' %}#fee2e2; color: #991b1b;{% elif r.priority == 'High' %}#fef3c7; color: #92400e;{% elif r.priority == 'Medium' %}#e0f2fe; color: #075985;{% else %}#dcfce7; color: #166534;{% endif %}">
+                            {{ r.priority }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge {% if r.status == 'Delivered' %}badge-success{% elif r.status == 'Pending' %}badge-warning{% elif r.status == 'Approved' %}badge-info{% elif r.status == 'Dispatched' %}badge-info{% else %}badge-danger{% endif %}">
+                            {{ r.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 4rem; color: var(--text-muted);">
+                        <i class="fas fa-clipboard-list" style="font-size: 3rem; display: block; margin-bottom: 1rem; opacity: 0.2;"></i>
+                        You haven't made any resource requests yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div style="margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+    <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--warning);">
+        <h4 style="margin-bottom: 0.5rem;"><i class="fas fa-clock"></i> Pending Status</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Your request is being reviewed by the district officers against current stock availability.</p>
+    </div>
+    <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--primary);">
+        <h4 style="margin-bottom: 0.5rem;"><i class="fas fa-truck-dispatch"></i> Dispatched Status</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">A volunteer has picked up your resources and is currently on the way to your location.</p>
+    </div>
+    <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--success);">
+        <h4 style="margin-bottom: 0.5rem;"><i class="fas fa-check-double"></i> Delivered Status</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">The resources have been successfully handed over and the request is closed.</p>
+    </div>
+</div>
+{% endblock %}
