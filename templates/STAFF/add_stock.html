@@ -1,0 +1,48 @@
+{% extends 'STAFF/commen.html' %}
+
+{% block staff_body %}
+<div class="page-header">
+    <h1>Update Inventory Stock</h1>
+    <a href="/staff_manage_stock/" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back to Warehouse</a>
+</div>
+
+<div class="card" style="max-width: 650px; margin: 0 auto;">
+    <div style="background: var(--primary-light); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--border);">
+        <h4 style="color: var(--primary); margin-bottom: 5px;"><i class="fas fa-warehouse"></i> {{ staff.district.name }} District Warehouse</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Ensure all stock entries are accurate. This data is used for global resource monitoring.</p>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Resource Category</label>
+            <select name="category" class="form-control" required style="appearance: auto; color: var(--text-main) !important;">
+                <option value="">Select Category</option>
+                {% for c in categories %}
+                <option value="{{ c.id }}">{{ c.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Item Name</label>
+            <input type="text" name="item_name" class="form-control" required placeholder="e.g., Bottled Water, Rice Bags, Paracetamol">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>Quantity to Add/Update</label>
+                <input type="number" step="0.01" name="quantity" class="form-control" required placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label>Unit of Measurement</label>
+                <input type="text" name="unit" class="form-control" required placeholder="e.g., Liters, KG, Boxes">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1rem; font-size: 1.1rem; font-weight: 700; margin-top: 1rem;">
+            Update Warehouse Inventory
+        </button>
+    </form>
+</div>
+{% endblock %}
