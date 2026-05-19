@@ -8,15 +8,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-light: #eff6ff;
-            --secondary: #64748b;
-            --bg: #f8fafc;
-            --sidebar: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --primary: #3b82f6;
+            --primary-light: rgba(59, 130, 246, 0.15);
+            --secondary: #94a3b8;
+            --bg: #090d16;
+            --sidebar: #111827;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border: #1f2937;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -93,7 +93,7 @@
         .page-header h1 { font-family: 'Outfit', sans-serif; font-size: 1.75rem; }
 
         .card {
-            background: #ffffff;
+            background: var(--sidebar);
             border-radius: 16px;
             border: 1px solid var(--border);
             padding: 1.5rem;
@@ -108,7 +108,7 @@
         }
 
         .stat-card {
-            background: #ffffff;
+            background: var(--sidebar);
             padding: 1.5rem;
             border-radius: 16px;
             border: 1px solid var(--border);
@@ -121,9 +121,9 @@
         .stat-value { font-size: 1.75rem; font-weight: 800; color: var(--text-main); }
 
         /* Tables */
-        .table-container { background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+        .table-container { background: var(--sidebar); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f8fafc; padding: 1rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+        th { background: #1f2937; padding: 1rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
         td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
 
         .btn {
@@ -140,7 +140,7 @@
         }
 
         .btn-primary { background: var(--primary); color: white; }
-        .btn-outline { border: 1px solid var(--border); color: var(--text-main); background: white; }
+        .btn-outline { border: 1px solid var(--border); color: var(--text-main); background: #1f2937; }
         .btn-danger { background: #fee2e2; color: #dc2626; }
 
         .badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
