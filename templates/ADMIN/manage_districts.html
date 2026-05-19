@@ -1,0 +1,42 @@
+{% extends 'ADMIN/commen.html' %}
+
+{% block admin_body %}
+<div class="page-header">
+    <h1>Manage Districts</h1>
+    <a href="/admin_add_district/" class="btn btn-primary"><i class="fas fa-plus"></i> Add District</a>
+</div>
+
+<div class="card">
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>District Name</th>
+                    <th>Description</th>
+                    <th>State</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in districts %}
+                <tr>
+                    <td><strong>{{ d.name }}</strong></td>
+                    <td style="color: var(--text-muted); font-size: 0.85rem;">{{ d.description|default:"No description" }}</td>
+                    <td><span class="badge badge-info">{{ d.state }}</span></td>
+                    <td>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="/admin_edit_district/?id={{ d.id }}" class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></a>
+                            <a href="/admin_delete_district/?id={{ d.id }}" class="btn btn-danger btn-sm" onclick="return confirm('Delete this district?')"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 3rem; color: var(--text-muted);">No districts found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
