@@ -1,0 +1,39 @@
+{% extends 'CITIZEN/commen.html' %}
+
+{% block citizen_body %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+    <div>
+        <h1 style="font-family: 'Outfit'; font-size: 2rem;">Welcome, {{ citizen.name }}</h1>
+        <p style="color: var(--text-muted);">Current District: <strong>{{ citizen.district.name }}</strong></p>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem;">
+    <div class="card" style="background: var(--primary); color: white; border: none; display: flex; flex-direction: column; justify-content: center; padding: 2.5rem;">
+        <h3 style="margin-bottom: 1rem; font-family: 'Outfit'; font-size: 1.5rem;">Need Assistance?</h3>
+        <p style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 2rem;">Request essential resources like food, water, or medicine from {{ citizen.district.name }} district authorities. You can view your requested resources status anytime from the history page.</p>
+        <div style="display: flex; gap: 15px;">
+            <a href="/citizen_request_resource/" class="btn" style="background: white; color: var(--primary); flex: 1; justify-content: center; padding: 1rem;">Request Resources</a>
+            <a href="/citizen_view_resource_requests/" class="btn" style="background: rgba(255,255,255,0.2); color: white; flex: 1; justify-content: center; padding: 1rem;">View History</a>
+        </div>
+    </div>
+
+    <div class="card" style="padding: 2.5rem;">
+        <h3 style="margin-bottom: 1.5rem; font-family: 'Outfit'; font-size: 1.25rem;">Safety Information</h3>
+        <div style="display: flex; flex-direction: column; gap: 16px; font-size: 0.95rem; color: var(--text-muted);">
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <i class="fas fa-circle-info" style="color: var(--primary); margin-top: 4px;"></i>
+                <span>Ensure your profile contact details are always kept up-to-date.</span>
+            </div>
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <i class="fas fa-circle-info" style="color: var(--primary); margin-top: 4px;"></i>
+                <span>Keep clean water, high-calorie foods, and essential medications in storage.</span>
+            </div>
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <i class="fas fa-circle-info" style="color: var(--primary); margin-top: 4px;"></i>
+                <span>Cooperate fully with dispatch officers and emergency volunteers.</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

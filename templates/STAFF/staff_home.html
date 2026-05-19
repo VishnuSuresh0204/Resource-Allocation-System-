@@ -1,0 +1,50 @@
+{% extends 'STAFF/commen.html' %}
+
+{% block staff_body %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+    <div>
+        <h1 style="font-family: 'Outfit'; font-size: 2rem;">District Control Center</h1>
+        <p style="color: var(--text-muted);">Monitoring <strong>{{ staff.district.name }}</strong> District</p>
+    </div>
+</div>
+
+<div class="stat-grid">
+    <div class="stat-card" style="border-left-color: #10b981;">
+        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">Resources Stocked</div>
+        <div style="font-size: 1.75rem; font-weight: 800;">Active</div>
+    </div>
+    <div class="stat-card" style="border-left-color: #f59e0b;">
+        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">Available Volunteers</div>
+        <div style="font-size: 1.75rem; font-weight: 800;">Online</div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem;">
+    <div class="card" style="background: var(--primary); color: white; border: none; display: flex; flex-direction: column; justify-content: center; padding: 2.5rem;">
+        <h3 style="margin-bottom: 1rem; font-family: 'Outfit'; font-size: 1.5rem;">Resource Status</h3>
+        <p style="font-size: 1rem; opacity: 0.9; margin-bottom: 2rem;">Check inventory levels, update stock availability, and handle citizen aid requests for {{ staff.district.name }} district.</p>
+        <div style="display: flex; gap: 15px;">
+            <a href="/staff_manage_stock/" class="btn" style="background: rgba(255,255,255,0.2); color: white; flex: 1; justify-content: center; padding: 1rem;">Check Inventory</a>
+            <a href="/staff_view_resource_requests/" class="btn" style="background: white; color: var(--primary); flex: 1; justify-content: center; padding: 1rem;">View Aid Requests</a>
+        </div>
+    </div>
+
+    <div class="card" style="padding: 2.5rem;">
+        <h3 style="margin-bottom: 1.5rem; font-family: 'Outfit'; font-size: 1.25rem;">Officer Tasks</h3>
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-check-circle" style="color: #10b981; font-size: 1.2rem;"></i>
+                <span style="font-size: 0.95rem;">Monitor local stock thresholds</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-check-circle" style="color: #10b981; font-size: 1.2rem;"></i>
+                <span style="font-size: 0.95rem;">Dispatch volunteer responders</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-check-circle" style="color: #10b981; font-size: 1.2rem;"></i>
+                <span style="font-size: 0.95rem;">Review citizen resource requests</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

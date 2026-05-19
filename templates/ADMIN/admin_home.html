@@ -1,0 +1,89 @@
+{% extends 'ADMIN/commen.html' %}
+
+{% block admin_body %}
+<div class="page-header">
+    <h1>System Dashboard</h1>
+
+</div>
+
+<div class="dashboard-grid">
+    <div class="stat-card">
+        <span class="stat-label">Districts Covered</span>
+        <span class="stat-value">{{ districts }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">District Officers</span>
+        <span class="stat-value">{{ staff }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Active Volunteers</span>
+        <span class="stat-value">{{ volunteers }}</span>
+    </div>
+
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <h3 style="margin-bottom: 1.5rem; font-family: 'Outfit';">Quick Resource Actions</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <a href="/admin_add_resource_category/" class="btn btn-outline" style="justify-content: center; padding: 1.5rem;">
+            <div style="text-align: center;">
+                <i class="fas fa-folder-plus" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem; color: var(--primary);"></i>
+                New Category
+            </div>
+        </a>
+        <a href="/admin_view_resource_stock/" class="btn btn-outline" style="justify-content: center; padding: 1.5rem;">
+            <div style="text-align: center;">
+                <i class="fas fa-warehouse" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem; color: #10b981;"></i>
+                Stock Inventory
+            </div>
+        </a>
+        <a href="/admin_approve_volunteers/" class="btn btn-outline" style="justify-content: center; padding: 1.5rem;">
+            <div style="text-align: center;">
+                <i class="fas fa-user-check" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem; color: var(--accent);"></i>
+                Approve Volunteers
+            </div>
+        </a>
+        <a href="/admin_add_staff/" class="btn btn-outline" style="justify-content: center; padding: 1.5rem;">
+            <div style="text-align: center;">
+                <i class="fas fa-user-shield" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem; color: #6366f1;"></i>
+                Add Officer
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="font-family: 'Outfit';">System Monitoring</h3>
+        <span class="badge badge-info">Real-time Updates</span>
+    </div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>District</th>
+                    <th>Officer</th>
+                    <th>Volunteers</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% if districts_list %}
+                    {% for d in districts_list %}
+                    <tr>
+                        <td>{{ d.name }}</td>
+                        <td>{{ d.staff_count }} Active</td>
+                        <td>{{ d.volunteer_count }} Online</td>
+
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">No district data available.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

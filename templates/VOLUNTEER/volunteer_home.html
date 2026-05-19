@@ -1,0 +1,41 @@
+{% extends 'VOLUNTEER/commen.html' %}
+
+{% block volunteer_body %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+    <div>
+        <h1 style="font-family: 'Outfit'; font-size: 2rem;">Volunteer Hub</h1>
+        <p style="color: var(--text-muted);">Ready to serve in <strong>{{ volunteer.district.name }}</strong></p>
+    </div>
+    <div style="display: flex; gap: 15px; align-items: center;">
+        <span class="badge badge-success">
+            Status: Active Responder
+        </span>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem;">
+    <div class="card" style="background: var(--primary); color: white; border: none; display: flex; flex-direction: column; justify-content: center; padding: 2.5rem;">
+        <h3 style="margin-bottom: 1rem; font-family: 'Outfit'; font-size: 1.5rem;">Resource Delivery</h3>
+        <p style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 2rem;">You are assigned to coordinate and deliver critical resources like food, water, and medicine to citizens in {{ volunteer.district.name }}. Check your pending and completed deliveries below.</p>
+        <a href="/volunteer_view_deliveries/" class="btn" style="background: white; color: var(--primary); align-self: flex-start; padding: 1rem 2rem; font-weight: 700;">Check Deliveries</a>
+    </div>
+
+    <div class="card" style="padding: 2.5rem;">
+        <h3 style="margin-bottom: 1.5rem; font-family: 'Outfit'; font-size: 1.25rem;">Volunteer Guidelines</h3>
+        <div style="display: flex; flex-direction: column; gap: 16px; font-size: 0.95rem; color: var(--text-muted);">
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <i class="fas fa-truck-ramp-box" style="color: var(--primary); margin-top: 4px;"></i>
+                <span>Always check quantity and details before dispatching.</span>
+            </div>
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <i class="fas fa-circle-check" style="color: #10b981; margin-top: 4px;"></i>
+                <span>Update delivery status immediately upon arrival to ensure transparency.</span>
+            </div>
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <i class="fas fa-heart" style="color: #ef4444; margin-top: 4px;"></i>
+                <span>Cooperate closely with district officers at the Control Center.</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
