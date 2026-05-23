@@ -125,3 +125,49 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification for {self.user.username}"
+
+
+class StaffResourceRequirement(models.Model):
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    district = models.ForeignKey(District, on_delete=models.CASCADE)
+    category = models.ForeignKey(ResourceCategory, on_delete=models.CASCADE)
+    item_name = models.CharField(max_length=200)
+    quantity_needed = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity_satisfied = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    unit = models.CharField(max_length=50, help_text="e.g., kg, packets, units")
+    description = models.TextField()
+    status = models.CharField(max_length=20, default='Open')  # 'Open' / 'Fulfilled'
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def remaining_needed(self):
+        return max(0.0, float(self.quantity_needed) - float(self.quantity_satisfied))
+
+    def __str__(self):
+        return f"{self.item_name} Needed in {self.district.name}"
+
+
+class DonationOffer(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Assigned', 'Volunteer Assigned'),
+        ('Collected', 'Collected by Volunteer'),
+        ('Completed', 'Completed'),
+        ('Rejected', 'Rejected'),
+    ]
+    requirement = models.ForeignKey(StaffResourceRequirement, on_delete=models.CASCADE)
+    donor_login = models.ForeignKey(Login, on_delete=models.CASCADE)
+    donor_name = models.CharField(max_length=200)
+    donor_phone = models.CharField(max_length=20)
+    donor_type = models.CharField(max_length=20)  # 'Citizen' / 'Volunteer'
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
+    need_assistance = models.BooleanField(default=False)
+    pickup_address = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    assigned_volunteer = models.ForeignKey(Volunteer, on_delete=models.SET_NULL, null=True, blank=True)
+    remarks = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Donation of {self.quantity} {self.requirement.unit} for {self.requirement.item_name}"
+
