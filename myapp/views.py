@@ -28,8 +28,12 @@ def login_view(request):
                 messages.error(request, f"Account {s.status}")
             elif user.userType == "volunteer":
                 v = Volunteer.objects.get(loginid=user)
-                if v.status == "Approved": return redirect("/volunteer_home")
-                messages.error(request, f"Account {v.status}. Wait for approval.")
+                if v.status == "Approved": 
+                    return redirect("/volunteer_home")
+                elif v.status == "Blocked":
+                    messages.error(request, "Your account has been blocked by the admin.")
+                else:
+                    messages.error(request, f"Account {v.status}. Wait for approval.")
             elif user.userType == "user":
                 return redirect("/citizen_home")
             logout(request)
@@ -196,13 +200,23 @@ def citizen_view_resource_requests(request):
 
 def volunteer_home(request):
     v = Volunteer.objects.get(loginid_id=request.session["lid"])
+    if v.status != "Approved":
+        messages.error(request, "Your account has been blocked or is no longer approved.")
+        return redirect("/login")
     return render(request, 'VOLUNTEER/volunteer_home.html', {'volunteer': v, 'deliveries': ResourceDistribution.objects.filter(volunteer=v).exclude(request__status='Delivered')})
 
 def volunteer_view_deliveries(request):
     v = Volunteer.objects.get(loginid_id=request.session["lid"])
+    if v.status != "Approved":
+        messages.error(request, "Your account has been blocked or is no longer approved.")
+        return redirect("/login")
     return render(request, 'VOLUNTEER/view_deliveries.html', {'deliveries': ResourceDistribution.objects.filter(volunteer=v).order_by('-dispatched_at')})
 
 def volunteer_update_delivery(request):
+    v = Volunteer.objects.get(loginid_id=request.session["lid"])
+    if v.status != "Approved":
+        messages.error(request, "Your account has been blocked or is no longer approved.")
+        return redirect("/login")
     d = ResourceDistribution.objects.get(id=request.GET.get("id"))
     if request.method == "POST":
         d.request.status = "Delivered"
