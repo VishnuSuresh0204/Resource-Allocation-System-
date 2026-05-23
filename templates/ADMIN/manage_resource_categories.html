@@ -32,9 +32,14 @@
                     <td><strong>{{ c.name }}</strong></td>
                     <td style="color: var(--text-muted); font-size: 0.85rem;">{{ c.description|truncatechars:100 }}</td>
                     <td>
-                        <a href="/admin_delete_resource_category/?id={{ c.id }}" class="btn btn-danger btn-sm" onclick="return confirm('Delete this category?')">
-                            <i class="fas fa-trash"></i>
-                        </a>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="/admin_edit_resource_category/?id={{ c.id }}" class="btn btn-outline btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="/admin_delete_resource_category/?id={{ c.id }}" class="btn btn-danger btn-sm" onclick="return confirm('Delete this category?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
                     </td>
                 </tr>
                 {% empty %}

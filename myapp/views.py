@@ -176,6 +176,19 @@ def admin_add_resource_category(request):
         return redirect("/admin_manage_resource_categories")
     return render(request, 'ADMIN/add_resource_category.html')
 
+def admin_edit_resource_category(request):
+    c = ResourceCategory.objects.get(id=request.GET.get("id"))
+    if request.method == "POST":
+        c.name = request.POST.get('name')
+        c.description = request.POST.get('description')
+        icon = request.FILES.get('icon')
+        if icon:
+            c.icon = icon
+        c.save()
+        messages.success(request, "Category Updated")
+        return redirect("/admin_manage_resource_categories")
+    return render(request, 'ADMIN/edit_resource_category.html', {'category': c})
+
 def admin_view_resource_stock(request):
     return render(request, 'ADMIN/view_resource_stock.html', {'stock': ResourceStock.objects.all().order_by('district')})
 

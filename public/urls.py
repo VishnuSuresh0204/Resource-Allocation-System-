@@ -28,6 +28,7 @@ urlpatterns = [
     path('admin_volunteer_action/', views.admin_volunteer_action),
     path('admin_manage_resource_categories/', views.admin_manage_resource_categories),
     path('admin_add_resource_category/', views.admin_add_resource_category),
+    path('admin_edit_resource_category/', views.admin_edit_resource_category),
     path('admin_view_resource_stock/', views.admin_view_resource_stock),
 
     # Staff URLs
