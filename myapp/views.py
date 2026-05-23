@@ -82,11 +82,25 @@ def admin_home(request):
             'staff_count': Staff.objects.filter(district=d).count(),
             'volunteer_count': Volunteer.objects.filter(district=d).count(),
         })
+    pending_volunteers = Volunteer.objects.filter(status="Pending").count()
+    pending_requests = UserResourceRequest.objects.filter(status="Pending").count()
+    total_requests = UserResourceRequest.objects.count()
+    delivered_requests = UserResourceRequest.objects.filter(status="Delivered").count()
+    categories_count = ResourceCategory.objects.count()
+    citizens_count = Citizen.objects.count()
+    recent_requests = UserResourceRequest.objects.order_by('-requested_at')[:5]
     return render(request, 'ADMIN/admin_home.html', {
         'districts': District.objects.count(),
         'staff': Staff.objects.count(),
         'volunteers': Volunteer.objects.count(),
-        'districts_list': districts_list
+        'districts_list': districts_list,
+        'pending_volunteers': pending_volunteers,
+        'pending_requests': pending_requests,
+        'total_requests': total_requests,
+        'delivered_requests': delivered_requests,
+        'categories_count': categories_count,
+        'citizens_count': citizens_count,
+        'recent_requests': recent_requests,
     })
 
 def admin_manage_districts(request):
