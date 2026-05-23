@@ -219,7 +219,27 @@ def staff_home(request):
     if s.status != "active":
         messages.error(request, "Your account has been blocked or is inactive.")
         return redirect("/login")
-    return render(request, 'STAFF/staff_home.html', {'staff': s})
+        
+    # Gather statistics
+    total_stock_items = ResourceStock.objects.filter(district=s.district).count()
+    pending_requests = UserResourceRequest.objects.filter(district=s.district, status='Pending').count()
+    active_requirements = StaffResourceRequirement.objects.filter(district=s.district, status='Open').count()
+    pending_donations = DonationOffer.objects.filter(requirement__district=s.district, status='Pending').count()
+    district_volunteers = Volunteer.objects.filter(district=s.district, status='Approved').count()
+    
+    recent_requests = UserResourceRequest.objects.filter(district=s.district).order_by('-requested_at')[:5]
+    recent_donations = DonationOffer.objects.filter(requirement__district=s.district).order_by('-created_at')[:5]
+    
+    return render(request, 'STAFF/staff_home.html', {
+        'staff': s,
+        'total_stock_items': total_stock_items,
+        'pending_requests': pending_requests,
+        'active_requirements': active_requirements,
+        'pending_donations': pending_donations,
+        'district_volunteers': district_volunteers,
+        'recent_requests': recent_requests,
+        'recent_donations': recent_donations,
+    })
 
 def staff_manage_stock(request):
     s = Staff.objects.get(loginid_id=request.session["lid"])
@@ -270,7 +290,25 @@ def staff_approve_resource_request(request):
 
 def citizen_home(request):
     c = Citizen.objects.get(loginid_id=request.session["lid"])
-    return render(request, 'CITIZEN/citizen_home.html', {'citizen': c})
+    
+    # Gather statistics
+    my_active_requests = UserResourceRequest.objects.filter(user=c, status__in=['Pending', 'Approved', 'Dispatched']).count()
+    my_completed_donations = DonationOffer.objects.filter(donor_login=c.loginid, status='Completed').count()
+    my_pending_donations = DonationOffer.objects.filter(donor_login=c.loginid, status='Pending').count()
+    open_requirements = StaffResourceRequirement.objects.filter(district=c.district, status='Open').count()
+    
+    recent_requests = UserResourceRequest.objects.filter(user=c).order_by('-requested_at')[:5]
+    recent_donations = DonationOffer.objects.filter(donor_login=c.loginid).order_by('-created_at')[:5]
+    
+    return render(request, 'CITIZEN/citizen_home.html', {
+        'citizen': c,
+        'my_active_requests': my_active_requests,
+        'my_completed_donations': my_completed_donations,
+        'my_pending_donations': my_pending_donations,
+        'open_requirements': open_requirements,
+        'recent_requests': recent_requests,
+        'recent_donations': recent_donations,
+    })
 
 def citizen_request_resource(request):
     c = Citizen.objects.get(loginid_id=request.session["lid"])
@@ -292,7 +330,26 @@ def volunteer_home(request):
     if v.status != "Approved":
         messages.error(request, "Your account has been blocked or is no longer approved.")
         return redirect("/login")
-    return render(request, 'VOLUNTEER/volunteer_home.html', {'volunteer': v, 'deliveries': ResourceDistribution.objects.filter(volunteer=v).exclude(request__status='Delivered')})
+        
+    # Gather statistics
+    pending_deliveries = ResourceDistribution.objects.filter(volunteer=v).exclude(request__status='Delivered').count()
+    assigned_pickups = DonationOffer.objects.filter(assigned_volunteer=v, status__in=['Assigned', 'Collected']).count()
+    my_donations = DonationOffer.objects.filter(donor_login=v.loginid).count()
+    open_requirements = StaffResourceRequirement.objects.filter(district=v.district, status='Open').count()
+    
+    recent_deliveries = ResourceDistribution.objects.filter(volunteer=v).order_by('-dispatched_at')[:5]
+    recent_pickups = DonationOffer.objects.filter(assigned_volunteer=v).order_by('-created_at')[:5]
+    
+    return render(request, 'VOLUNTEER/volunteer_home.html', {
+        'volunteer': v,
+        'deliveries': ResourceDistribution.objects.filter(volunteer=v).exclude(request__status='Delivered'),
+        'pending_deliveries_count': pending_deliveries,
+        'assigned_pickups_count': assigned_pickups,
+        'my_donations_count': my_donations,
+        'open_requirements_count': open_requirements,
+        'recent_deliveries': recent_deliveries,
+        'recent_pickups': recent_pickups,
+    })
 
 def volunteer_view_deliveries(request):
     v = Volunteer.objects.get(loginid_id=request.session["lid"])
