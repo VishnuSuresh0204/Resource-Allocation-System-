@@ -38,16 +38,28 @@ urlpatterns = [
     path('staff_add_stock/', views.staff_add_stock),
     path('staff_view_resource_requests/', views.staff_view_resource_requests),
     path('staff_approve_resource_request/', views.staff_approve_resource_request),
+    path('staff_add_requirement/', views.staff_add_requirement),
+    path('staff_view_requirements/', views.staff_view_requirements),
+    path('staff_view_donations/', views.staff_view_donations),
+    path('staff_approve_donation/', views.staff_approve_donation),
 
     # Citizen URLs
     path('citizen_home/', views.citizen_home),
     path('citizen_request_resource/', views.citizen_request_resource),
     path('citizen_view_resource_requests/', views.citizen_view_resource_requests),
+    path('citizen_view_requirements/', views.citizen_view_requirements),
+    path('citizen_donate/', views.citizen_donate),
+    path('citizen_view_donations/', views.citizen_view_donations),
 
     # Volunteer URLs
     path('volunteer_home/', views.volunteer_home),
     path('volunteer_view_deliveries/', views.volunteer_view_deliveries),
     path('volunteer_update_delivery/', views.volunteer_update_delivery),
+    path('volunteer_view_requirements/', views.volunteer_view_requirements),
+    path('volunteer_donate/', views.volunteer_donate),
+    path('volunteer_view_donations/', views.volunteer_view_donations),
+    path('volunteer_assigned_donations/', views.volunteer_assigned_donations),
+    path('volunteer_update_donation/', views.volunteer_update_donation),
     
     # Notifications
     path('get_notifications/', views.get_notifications),
