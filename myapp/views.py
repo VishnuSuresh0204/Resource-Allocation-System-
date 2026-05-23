@@ -321,3 +321,270 @@ def get_notifications(request):
     data = [{'message': n.message, 'id': n.id} for n in nots]
     nots.update(is_read=True)
     return JsonResponse({'notifications': data})
+
+
+# ================= STAFF RESOURCE REQUIREMENTS VIEWS =================
+
+def staff_add_requirement(request):
+    s = Staff.objects.get(loginid_id=request.session["lid"])
+    if s.status != "active":
+        messages.error(request, "Your account has been blocked or is inactive.")
+        return redirect("/login")
+    if request.method == "POST":
+        category_id = request.POST.get('category')
+        item_name = request.POST.get('item_name')
+        quantity_needed = request.POST.get('quantity_needed')
+        unit = request.POST.get('unit')
+        description = request.POST.get('description')
+        
+        StaffResourceRequirement.objects.create(
+            staff=s,
+            district=s.district,
+            category_id=category_id,
+            item_name=item_name,
+            quantity_needed=Decimal(quantity_needed),
+            unit=unit,
+            description=description
+        )
+        messages.success(request, "Resource Requirement Added successfully")
+        return redirect("/staff_view_requirements")
+    
+    categories = ResourceCategory.objects.all()
+    return render(request, 'STAFF/add_requirement.html', {'categories': categories, 'staff': s})
+
+
+def staff_view_requirements(request):
+    s = Staff.objects.get(loginid_id=request.session["lid"])
+    if s.status != "active":
+        messages.error(request, "Your account has been blocked or is inactive.")
+        return redirect("/login")
+    requirements = StaffResourceRequirement.objects.filter(district=s.district).order_by('-created_at')
+    return render(request, 'STAFF/view_requirements.html', {'requirements': requirements, 'staff': s})
+
+
+def staff_view_donations(request):
+    s = Staff.objects.get(loginid_id=request.session["lid"])
+    if s.status != "active":
+        messages.error(request, "Your account has been blocked or is inactive.")
+        return redirect("/login")
+    donations = DonationOffer.objects.filter(requirement__district=s.district).order_by('-created_at')
+    volunteers = Volunteer.objects.filter(district=s.district, status="Approved", availability_status="Available")
+    return render(request, 'STAFF/view_donations.html', {'donations': donations, 'volunteers': volunteers, 'staff': s})
+
+
+def complete_donation(donation):
+    if donation.status != 'Completed':
+        donation.status = 'Completed'
+        donation.save()
+        
+        # Update requirement satisfied quantity
+        req = donation.requirement
+        req.quantity_satisfied = Decimal(str(req.quantity_satisfied)) + Decimal(str(donation.quantity))
+        if req.quantity_satisfied >= req.quantity_needed:
+            req.status = 'Fulfilled'
+        req.save()
+        
+        # Update ResourceStock in the district
+        stock, created = ResourceStock.objects.get_or_create(
+            district=req.district,
+            category=req.category,
+            item_name=req.item_name,
+            defaults={'unit': req.unit, 'quantity': Decimal('0.0')}
+        )
+        if not created:
+            stock.quantity = Decimal(str(stock.quantity)) + Decimal(str(donation.quantity))
+            stock.save()
+        else:
+            stock.quantity = Decimal(str(donation.quantity))
+            stock.save()
+
+        # Notify donor
+        Notification.objects.create(
+            user=donation.donor_login,
+            message=f"Your donation of {donation.quantity} {req.unit} of {req.item_name} has been completed and added to stock."
+        )
+
+
+def staff_approve_donation(request):
+    s = Staff.objects.get(loginid_id=request.session["lid"])
+    if s.status != "active":
+        messages.error(request, "Your account has been blocked or is inactive.")
+        return redirect("/login")
+    if request.method == "POST":
+        d_id = request.POST.get('id')
+        act = request.POST.get('act')
+        donation = DonationOffer.objects.get(id=d_id)
+        if act == "assign":
+            v_id = request.POST.get('volunteer')
+            donation.assigned_volunteer_id = v_id
+            donation.status = 'Assigned'
+            donation.save()
+            Notification.objects.create(
+                user=donation.assigned_volunteer.loginid,
+                message=f"New Donation Pickup Assigned: {donation.requirement.item_name}"
+            )
+            messages.success(request, "Volunteer Assigned successfully")
+        elif act == "approve_direct":
+            complete_donation(donation)
+            messages.success(request, "Donation Approved and added to Stock")
+        elif act == "reject":
+            donation.status = 'Rejected'
+            donation.save()
+            messages.success(request, "Donation Rejected")
+        return redirect("/staff_view_donations")
+
+
+# ================= CITIZEN RESOURCE REQUIREMENTS & DONATIONS VIEWS =================
+
+def citizen_view_requirements(request):
+    c = Citizen.objects.get(loginid_id=request.session["lid"])
+    requirements = StaffResourceRequirement.objects.filter(district=c.district).order_by('-created_at')
+    # Filter only those that are not fulfilled to see if we can still donate
+    for r in requirements:
+        r.remaining = r.remaining_needed()
+    return render(request, 'CITIZEN/view_requirements.html', {'requirements': requirements, 'citizen': c})
+
+
+def citizen_donate(request):
+    c = Citizen.objects.get(loginid_id=request.session["lid"])
+    if request.method == "POST":
+        req_id = request.POST.get('req_id')
+        quantity = request.POST.get('quantity')
+        need_assistance = request.POST.get('need_assistance') == 'on'
+        pickup_address = request.POST.get('pickup_address')
+        
+        req = StaffResourceRequirement.objects.get(id=req_id)
+        qty = Decimal(quantity)
+        
+        if qty <= 0:
+            messages.error(request, "Quantity must be greater than zero.")
+            return redirect(f"/citizen_donate/?id={req_id}")
+            
+        remaining = Decimal(str(req.remaining_needed()))
+        if qty > remaining:
+            messages.error(request, "Quantity cannot exceed the remaining needed quantity.")
+            return redirect(f"/citizen_donate/?id={req_id}")
+            
+        DonationOffer.objects.create(
+            requirement=req,
+            donor_login=c.loginid,
+            donor_name=c.name,
+            donor_phone=c.phone,
+            donor_type='Citizen',
+            quantity=qty,
+            need_assistance=need_assistance,
+            pickup_address=pickup_address,
+            status='Pending'
+        )
+        messages.success(request, "Donation Offer submitted successfully.")
+        return redirect("/citizen_view_donations")
+        
+    req_id = request.GET.get('id')
+    req = StaffResourceRequirement.objects.get(id=req_id)
+    req.remaining = req.remaining_needed()
+    return render(request, 'CITIZEN/donate.html', {'req': req, 'citizen': c})
+
+
+def citizen_view_donations(request):
+    c = Citizen.objects.get(loginid_id=request.session["lid"])
+    donations = DonationOffer.objects.filter(donor_login=c.loginid).order_by('-created_at')
+    return render(request, 'CITIZEN/view_donations.html', {'donations': donations, 'citizen': c})
+
+
+# ================= VOLUNTEER RESOURCE REQUIREMENTS & DONATIONS VIEWS =================
+
+def volunteer_view_requirements(request):
+    v = Volunteer.objects.get(loginid_id=request.session["lid"])
+    if v.status != "Approved":
+        messages.error(request, "Your account has been blocked or is no longer approved.")
+        return redirect("/login")
+    requirements = StaffResourceRequirement.objects.filter(district=v.district).order_by('-created_at')
+    for r in requirements:
+        r.remaining = r.remaining_needed()
+    return render(request, 'VOLUNTEER/view_requirements.html', {'requirements': requirements, 'volunteer': v})
+
+
+def volunteer_donate(request):
+    v = Volunteer.objects.get(loginid_id=request.session["lid"])
+    if v.status != "Approved":
+        messages.error(request, "Your account has been blocked or is no longer approved.")
+        return redirect("/login")
+    if request.method == "POST":
+        req_id = request.POST.get('req_id')
+        quantity = request.POST.get('quantity')
+        need_assistance = request.POST.get('need_assistance') == 'on'
+        pickup_address = request.POST.get('pickup_address')
+        
+        req = StaffResourceRequirement.objects.get(id=req_id)
+        qty = Decimal(quantity)
+        
+        if qty <= 0:
+            messages.error(request, "Quantity must be greater than zero.")
+            return redirect(f"/volunteer_donate/?id={req_id}")
+            
+        remaining = Decimal(str(req.remaining_needed()))
+        if qty > remaining:
+            messages.error(request, "Quantity cannot exceed the remaining needed quantity.")
+            return redirect(f"/volunteer_donate/?id={req_id}")
+            
+        DonationOffer.objects.create(
+            requirement=req,
+            donor_login=v.loginid,
+            donor_name=v.name,
+            donor_phone=v.phone,
+            donor_type='Volunteer',
+            quantity=qty,
+            need_assistance=need_assistance,
+            pickup_address=pickup_address,
+            status='Pending'
+        )
+        messages.success(request, "Donation Offer submitted successfully.")
+        return redirect("/volunteer_view_donations")
+        
+    req_id = request.GET.get('id')
+    req = StaffResourceRequirement.objects.get(id=req_id)
+    req.remaining = req.remaining_needed()
+    return render(request, 'VOLUNTEER/donate.html', {'req': req, 'volunteer': v})
+
+
+def volunteer_view_donations(request):
+    v = Volunteer.objects.get(loginid_id=request.session["lid"])
+    if v.status != "Approved":
+        messages.error(request, "Your account has been blocked or is no longer approved.")
+        return redirect("/login")
+    donations = DonationOffer.objects.filter(donor_login=v.loginid).order_by('-created_at')
+    return render(request, 'VOLUNTEER/view_donations.html', {'donations': donations, 'volunteer': v})
+
+
+def volunteer_assigned_donations(request):
+    v = Volunteer.objects.get(loginid_id=request.session["lid"])
+    if v.status != "Approved":
+        messages.error(request, "Your account has been blocked or is no longer approved.")
+        return redirect("/login")
+    donations = DonationOffer.objects.filter(assigned_volunteer=v).order_by('-created_at')
+    return render(request, 'VOLUNTEER/assigned_donations.html', {'donations': donations, 'volunteer': v})
+
+
+def volunteer_update_donation(request):
+    v = Volunteer.objects.get(loginid_id=request.session["lid"])
+    if v.status != "Approved":
+        messages.error(request, "Your account has been blocked or is no longer approved.")
+        return redirect("/login")
+    if request.method == "POST":
+        d_id = request.POST.get('id')
+        act = request.POST.get('act')
+        donation = DonationOffer.objects.get(id=d_id, assigned_volunteer=v)
+        
+        if act == "Collected":
+            donation.status = 'Collected'
+            donation.save()
+            Notification.objects.create(
+                user=donation.requirement.staff.loginid,
+                message=f"Volunteer {v.name} has collected the donation of {donation.quantity} {donation.requirement.unit} of {donation.requirement.item_name}."
+            )
+            messages.success(request, "Donation status updated to Collected.")
+        elif act == "Completed":
+            complete_donation(donation)
+            messages.success(request, "Donation status updated to Completed and Stock updated.")
+            
+        return redirect("/volunteer_assigned_donations")
