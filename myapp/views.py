@@ -189,6 +189,12 @@ def admin_edit_resource_category(request):
         return redirect("/admin_manage_resource_categories")
     return render(request, 'ADMIN/edit_resource_category.html', {'category': c})
 
+def admin_delete_resource_category(request):
+    c = ResourceCategory.objects.get(id=request.GET.get("id"))
+    c.delete()
+    messages.success(request, "Category Deleted")
+    return redirect("/admin_manage_resource_categories")
+
 def admin_view_resource_stock(request):
     return render(request, 'ADMIN/view_resource_stock.html', {'stock': ResourceStock.objects.all().order_by('district')})
 
