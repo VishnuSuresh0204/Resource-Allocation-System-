@@ -264,7 +264,10 @@
                 <a href="/volunteer_home/" class="nav-link {% if request.path == '/volunteer_home/' %}active{% endif %}">
                     <i class="fas fa-gauge"></i><span>Dashboard</span>
                 </a>
-                <a href="/volunteer_view_deliveries/" class="nav-link"><i class="fas fa-truck-ramp-box"></i><span>Resource Deliveries</span></a>
+                <a href="/volunteer_view_deliveries/" class="nav-link {% if 'deliveries' in request.path %}active{% endif %}"><i class="fas fa-truck-ramp-box"></i><span>Resource Deliveries</span></a>
+                <a href="/volunteer_view_requirements/" class="nav-link {% if 'requirement' in request.path %}active{% endif %}"><i class="fas fa-clipboard-list"></i><span>Public Requirements</span></a>
+                <a href="/volunteer_assigned_donations/" class="nav-link {% if 'assigned_donations' in request.path %}active{% endif %}"><i class="fas fa-truck-pickup"></i><span>Assigned Pickups</span></a>
+                <a href="/volunteer_view_donations/" class="nav-link {% if 'donation' in request.path %}active{% endif %}"><i class="fas fa-hand-holding-heart"></i><span>My Donations</span></a>
             </div>
 
             <div>

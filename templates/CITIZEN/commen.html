@@ -264,8 +264,10 @@
                 <a href="/citizen_home/" class="nav-link {% if request.path == '/citizen_home/' %}active{% endif %}">
                     <i class="fas fa-gauge-high"></i><span>Overview</span>
                 </a>
-                <a href="/citizen_request_resource/" class="nav-link"><i class="fas fa-hand-holding-hand"></i><span>Request Resources</span></a>
-                <a href="/citizen_view_resource_requests/" class="nav-link"><i class="fas fa-clock-rotate-left"></i><span>Request History</span></a>
+                <a href="/citizen_request_resource/" class="nav-link {% if 'request_resource' in request.path %}active{% endif %}"><i class="fas fa-hand-holding-hand"></i><span>Request Resources</span></a>
+                <a href="/citizen_view_resource_requests/" class="nav-link {% if 'resource_requests' in request.path %}active{% endif %}"><i class="fas fa-clock-rotate-left"></i><span>Request History</span></a>
+                <a href="/citizen_view_requirements/" class="nav-link {% if 'requirement' in request.path %}active{% endif %}"><i class="fas fa-clipboard-list"></i><span>Public Requirements</span></a>
+                <a href="/citizen_view_donations/" class="nav-link {% if 'donation' in request.path %}active{% endif %}"><i class="fas fa-hand-holding-heart"></i><span>My Donations</span></a>
             </div>
 
             <div>

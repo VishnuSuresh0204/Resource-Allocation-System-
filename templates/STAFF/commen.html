@@ -282,8 +282,10 @@
                 <a href="/staff_home/" class="nav-link {% if request.path == '/staff_home/' %}active{% endif %}">
                     <i class="fas fa-house"></i><span>Dashboard</span>
                 </a>
-                <a href="/staff_manage_stock/" class="nav-link"><i class="fas fa-warehouse"></i><span>Manage Stock</span></a>
-                <a href="/staff_view_resource_requests/" class="nav-link"><i class="fas fa-hand-holding-medical"></i><span>Resource Requests</span></a>
+                <a href="/staff_manage_stock/" class="nav-link {% if 'stock' in request.path %}active{% endif %}"><i class="fas fa-warehouse"></i><span>Manage Stock</span></a>
+                <a href="/staff_view_resource_requests/" class="nav-link {% if 'resource_request' in request.path %}active{% endif %}"><i class="fas fa-hand-holding-medical"></i><span>Resource Requests</span></a>
+                <a href="/staff_view_requirements/" class="nav-link {% if 'requirement' in request.path %}active{% endif %}"><i class="fas fa-list-check"></i><span>Asked Requirements</span></a>
+                <a href="/staff_view_donations/" class="nav-link {% if 'donation' in request.path %}active{% endif %}"><i class="fas fa-hand-holding-heart"></i><span>Donation Offers</span></a>
             </div>
 
             <div>
