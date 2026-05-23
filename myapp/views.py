@@ -125,6 +125,47 @@ def admin_volunteer_action(request):
     messages.success(request, f"Volunteer {act}")
     return redirect("/admin_approve_volunteers")
 
+def admin_edit_district(request):
+    d = District.objects.get(id=request.GET.get("id"))
+    if request.method == "POST":
+        d.name = request.POST.get('name')
+        d.description = request.POST.get('description')
+        d.save()
+        messages.success(request, "District Updated")
+        return redirect("/admin_manage_districts")
+    return render(request, 'ADMIN/edit_district.html', {'district': d})
+
+def admin_delete_district(request):
+    d = District.objects.get(id=request.GET.get("id"))
+    d.delete()
+    messages.success(request, "District Deleted")
+    return redirect("/admin_manage_districts")
+
+def admin_edit_staff(request):
+    s = Staff.objects.get(id=request.GET.get("id"))
+    if request.method == "POST":
+        s.name = request.POST.get('name')
+        s.email = request.POST.get('email')
+        s.phone = request.POST.get('phone')
+        s.designation = request.POST.get('designation')
+        s.district_id = request.POST.get('district')
+        pic = request.FILES.get('profile_pic')
+        if pic:
+            s.profile_pic = pic
+        s.save()
+        messages.success(request, "Staff Officer Updated")
+        return redirect("/admin_manage_staff")
+    return render(request, 'ADMIN/edit_staff.html', {'staff': s, 'districts': District.objects.all()})
+
+def admin_staff_status(request):
+    s = Staff.objects.get(id=request.GET.get("id"))
+    act = request.GET.get("act")
+    s.status = act
+    s.save()
+    messages.success(request, f"Officer {act.title()}")
+    return redirect("/admin_manage_staff")
+
+
 def admin_manage_resource_categories(request):
     return render(request, 'ADMIN/manage_resource_categories.html', {'categories': ResourceCategory.objects.all()})
 
@@ -142,14 +183,23 @@ def admin_view_resource_stock(request):
 
 def staff_home(request):
     s = Staff.objects.get(loginid_id=request.session["lid"])
+    if s.status != "active":
+        messages.error(request, "Your account has been blocked or is inactive.")
+        return redirect("/login")
     return render(request, 'STAFF/staff_home.html', {'staff': s})
 
 def staff_manage_stock(request):
     s = Staff.objects.get(loginid_id=request.session["lid"])
+    if s.status != "active":
+        messages.error(request, "Your account has been blocked or is inactive.")
+        return redirect("/login")
     return render(request, 'STAFF/manage_stock.html', {'stock': ResourceStock.objects.filter(district=s.district), 'staff': s})
 
 def staff_add_stock(request):
     s = Staff.objects.get(loginid_id=request.session["lid"])
+    if s.status != "active":
+        messages.error(request, "Your account has been blocked or is inactive.")
+        return redirect("/login")
     if request.method == "POST":
         it, qty, un = request.POST.get('item_name'), Decimal(request.POST.get('quantity')), request.POST.get('unit')
         stock, created = ResourceStock.objects.get_or_create(district=s.district, category_id=request.POST.get('category'), item_name=it, defaults={'unit': un})
@@ -162,11 +212,17 @@ def staff_add_stock(request):
 
 def staff_view_resource_requests(request):
     s = Staff.objects.get(loginid_id=request.session["lid"])
+    if s.status != "active":
+        messages.error(request, "Your account has been blocked or is inactive.")
+        return redirect("/login")
     return render(request, 'STAFF/view_resource_requests.html', {'requests': UserResourceRequest.objects.filter(district=s.district).order_by('-requested_at'), 'staff': s})
 
 def staff_approve_resource_request(request):
-    r = UserResourceRequest.objects.get(id=request.GET.get("id"))
     s = Staff.objects.get(loginid_id=request.session["lid"])
+    if s.status != "active":
+        messages.error(request, "Your account has been blocked or is inactive.")
+        return redirect("/login")
+    r = UserResourceRequest.objects.get(id=request.GET.get("id"))
     if request.method == "POST":
         v_id = request.POST.get('volunteer')
         r.status = "Approved"
