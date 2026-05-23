@@ -1,89 +1,703 @@
 {% extends 'ADMIN/commen.html' %}
 
+{% block extra_css %}
+<style>
+    /* ===== Welcome Banner ===== */
+    .welcome-banner {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #3b82f6 100%);
+        border-radius: 20px;
+        padding: 2.5rem 2.5rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .welcome-banner::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .welcome-banner::after {
+        content: '';
+        position: absolute;
+        bottom: -30%;
+        left: 10%;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .welcome-banner h1 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.85rem;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .welcome-banner p {
+        opacity: 0.85;
+        font-size: 0.95rem;
+        position: relative;
+        z-index: 1;
+        max-width: 500px;
+        line-height: 1.6;
+    }
+
+    .welcome-date {
+        position: absolute;
+        top: 2rem;
+        right: 2.5rem;
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 0.6rem 1.2rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        z-index: 1;
+    }
+
+    /* ===== Stat Cards Grid ===== */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card-new {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid var(--border);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: default;
+    }
+
+    .stat-card-new:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.12);
+    }
+
+    .stat-card-new .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-card-new .stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        font-family: 'Outfit', sans-serif;
+        line-height: 1;
+        margin-bottom: 0.35rem;
+    }
+
+    .stat-card-new .stat-title {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    .stat-card-new .stat-accent {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 80px;
+        height: 80px;
+        border-radius: 0 16px 0 80px;
+        opacity: 0.08;
+    }
+
+    /* Card color themes */
+    .stat-card-new.blue .stat-icon { background: #eff6ff; color: #2563eb; }
+    .stat-card-new.blue .stat-number { color: #1e40af; }
+    .stat-card-new.blue .stat-accent { background: #2563eb; }
+
+    .stat-card-new.emerald .stat-icon { background: #ecfdf5; color: #059669; }
+    .stat-card-new.emerald .stat-number { color: #065f46; }
+    .stat-card-new.emerald .stat-accent { background: #059669; }
+
+    .stat-card-new.violet .stat-icon { background: #f5f3ff; color: #7c3aed; }
+    .stat-card-new.violet .stat-number { color: #5b21b6; }
+    .stat-card-new.violet .stat-accent { background: #7c3aed; }
+
+    .stat-card-new.amber .stat-icon { background: #fffbeb; color: #d97706; }
+    .stat-card-new.amber .stat-number { color: #92400e; }
+    .stat-card-new.amber .stat-accent { background: #d97706; }
+
+    .stat-card-new.rose .stat-icon { background: #fff1f2; color: #e11d48; }
+    .stat-card-new.rose .stat-number { color: #9f1239; }
+    .stat-card-new.rose .stat-accent { background: #e11d48; }
+
+    .stat-card-new.cyan .stat-icon { background: #ecfeff; color: #0891b2; }
+    .stat-card-new.cyan .stat-number { color: #155e75; }
+    .stat-card-new.cyan .stat-accent { background: #0891b2; }
+
+    /* ===== Two Column Layout ===== */
+    .two-col {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 900px) {
+        .two-col { grid-template-columns: 1fr; }
+        .welcome-date { position: static; margin-top: 1rem; display: inline-block; }
+    }
+
+    /* ===== Quick Action Cards ===== */
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 1rem;
+    }
+
+    .action-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        text-decoration: none;
+        padding: 1.75rem 1rem;
+        border-radius: 16px;
+        border: 1.5px solid var(--border);
+        background: #ffffff;
+        color: var(--text-main);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .action-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        border-radius: 16px;
+    }
+
+    .action-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
+        border-color: transparent;
+    }
+
+    .action-card:nth-child(1)::before { background: linear-gradient(135deg, #eff6ff, #dbeafe); }
+    .action-card:nth-child(2)::before { background: linear-gradient(135deg, #ecfdf5, #d1fae5); }
+    .action-card:nth-child(3)::before { background: linear-gradient(135deg, #fef3c7, #fde68a); }
+    .action-card:nth-child(4)::before { background: linear-gradient(135deg, #f5f3ff, #ede9fe); }
+
+    .action-card:hover::before { opacity: 1; }
+
+    .action-card .action-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        position: relative;
+        z-index: 1;
+        transition: transform 0.3s ease;
+    }
+
+    .action-card:hover .action-icon { transform: scale(1.1); }
+
+    .action-card:nth-child(1) .action-icon { background: #dbeafe; color: #2563eb; }
+    .action-card:nth-child(2) .action-icon { background: #d1fae5; color: #059669; }
+    .action-card:nth-child(3) .action-icon { background: #fde68a; color: #d97706; }
+    .action-card:nth-child(4) .action-icon { background: #ede9fe; color: #7c3aed; }
+
+    .action-card .action-label {
+        font-weight: 600;
+        font-size: 0.88rem;
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+
+    /* ===== Section Card ===== */
+    .section-card {
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        padding: 1.75rem;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
+    }
+
+    .section-card .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+    }
+
+    .section-card .section-header h3 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.15rem;
+        color: var(--text-main);
+    }
+
+    /* ===== Activity Feed ===== */
+    .activity-feed {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 1rem 0;
+        border-bottom: 1px solid #f1f5f9;
+        transition: background 0.2s ease;
+    }
+
+    .activity-item:last-child { border-bottom: none; }
+
+    .activity-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-top: 5px;
+        flex-shrink: 0;
+    }
+
+    .activity-dot.pending { background: #f59e0b; box-shadow: 0 0 0 4px #fef3c7; }
+    .activity-dot.approved { background: #10b981; box-shadow: 0 0 0 4px #d1fae5; }
+    .activity-dot.delivered { background: #2563eb; box-shadow: 0 0 0 4px #dbeafe; }
+    .activity-dot.rejected { background: #ef4444; box-shadow: 0 0 0 4px #fee2e2; }
+
+    .activity-info { flex: 1; }
+
+    .activity-info .activity-title {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 3px;
+    }
+
+    .activity-info .activity-meta {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+    }
+
+    .activity-badge {
+        padding: 0.2rem 0.65rem;
+        border-radius: 8px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        flex-shrink: 0;
+    }
+
+    .activity-badge.pending { background: #fef3c7; color: #92400e; }
+    .activity-badge.approved { background: #d1fae5; color: #065f46; }
+    .activity-badge.delivered { background: #dbeafe; color: #1e40af; }
+    .activity-badge.rejected { background: #fee2e2; color: #991b1b; }
+
+    /* ===== Enhanced System Monitor Table ===== */
+    .monitor-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+
+    .monitor-table thead th {
+        background: #f8fafc;
+        padding: 0.85rem 1rem;
+        text-align: left;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--text-muted);
+        border-bottom: 2px solid var(--border);
+        font-weight: 700;
+    }
+
+    .monitor-table tbody td {
+        padding: 0.9rem 1rem;
+        font-size: 0.88rem;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+
+    .monitor-table tbody tr {
+        transition: background 0.2s ease;
+    }
+
+    .monitor-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .district-name {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+    }
+
+    .district-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .count-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0.3rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 600;
+    }
+
+    .count-pill.officers { background: #eff6ff; color: #1d4ed8; }
+    .count-pill.volunteers { background: #f0fdf4; color: #15803d; }
+
+    /* ===== Empty State ===== */
+    .empty-state {
+        text-align: center;
+        padding: 2.5rem;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #cbd5e1;
+    }
+
+    .empty-state p {
+        font-size: 0.9rem;
+    }
+
+    /* ===== Pending Alert Card ===== */
+    .pending-alerts {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .alert-card {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 1rem 1.25rem;
+        border-radius: 14px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 1px solid;
+    }
+
+    .alert-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px -4px rgba(0,0,0,0.1);
+    }
+
+    .alert-card.warning {
+        background: #fffbeb;
+        border-color: #fde68a;
+        color: #92400e;
+    }
+
+    .alert-card.danger {
+        background: #fef2f2;
+        border-color: #fecaca;
+        color: #991b1b;
+    }
+
+    .alert-card .alert-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .alert-card.warning .alert-icon { background: #fde68a; color: #92400e; }
+    .alert-card.danger .alert-icon { background: #fecaca; color: #991b1b; }
+
+    .alert-card .alert-text {
+        font-weight: 700;
+        font-size: 0.88rem;
+    }
+
+    .alert-card .alert-count {
+        font-size: 1.5rem;
+        font-weight: 800;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    @media (max-width: 600px) {
+        .pending-alerts { flex-direction: column; }
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* Counter animation */
+    .count-up {
+        display: inline-block;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .stats-grid .stat-card-new:nth-child(1) { animation: fadeInUp 0.5s ease 0.05s both; }
+    .stats-grid .stat-card-new:nth-child(2) { animation: fadeInUp 0.5s ease 0.1s both; }
+    .stats-grid .stat-card-new:nth-child(3) { animation: fadeInUp 0.5s ease 0.15s both; }
+    .stats-grid .stat-card-new:nth-child(4) { animation: fadeInUp 0.5s ease 0.2s both; }
+    .stats-grid .stat-card-new:nth-child(5) { animation: fadeInUp 0.5s ease 0.25s both; }
+    .stats-grid .stat-card-new:nth-child(6) { animation: fadeInUp 0.5s ease 0.3s both; }
+</style>
+{% endblock %}
+
 {% block admin_body %}
-<div class="page-header">
-    <h1>System Dashboard</h1>
 
-</div>
-
-<div class="dashboard-grid">
-    <div class="stat-card">
-        <span class="stat-label">Districts Covered</span>
-        <span class="stat-value">{{ districts }}</span>
-    </div>
-    <div class="stat-card">
-        <span class="stat-label">District Officers</span>
-        <span class="stat-value">{{ staff }}</span>
-    </div>
-    <div class="stat-card">
-        <span class="stat-label">Active Volunteers</span>
-        <span class="stat-value">{{ volunteers }}</span>
-    </div>
-
-</div>
-
-<div class="card" style="margin-bottom: 2rem;">
-    <h3 style="margin-bottom: 1.5rem; font-family: 'Outfit';">Quick Resource Actions</h3>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-        <a href="/admin_add_resource_category/" class="btn btn-outline" style="justify-content: center; padding: 1.5rem;">
-            <div style="text-align: center;">
-                <i class="fas fa-folder-plus" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem; color: var(--primary);"></i>
-                New Category
-            </div>
-        </a>
-        <a href="/admin_view_resource_stock/" class="btn btn-outline" style="justify-content: center; padding: 1.5rem;">
-            <div style="text-align: center;">
-                <i class="fas fa-warehouse" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem; color: #10b981;"></i>
-                Stock Inventory
-            </div>
-        </a>
-        <a href="/admin_approve_volunteers/" class="btn btn-outline" style="justify-content: center; padding: 1.5rem;">
-            <div style="text-align: center;">
-                <i class="fas fa-user-check" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem; color: var(--accent);"></i>
-                Approve Volunteers
-            </div>
-        </a>
-        <a href="/admin_add_staff/" class="btn btn-outline" style="justify-content: center; padding: 1.5rem;">
-            <div style="text-align: center;">
-                <i class="fas fa-user-shield" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem; color: #6366f1;"></i>
-                Add Officer
-            </div>
-        </a>
+<!-- Welcome Banner -->
+<div class="welcome-banner">
+    <h1><i class="fas fa-hand-sparkles" style="margin-right: 8px;"></i> Welcome back, Admin</h1>
+    <p>Here's what's happening across your Emergency Resource Allocation network today.</p>
+    <div class="welcome-date">
+        <i class="far fa-calendar-alt" style="margin-right: 6px;"></i>
+        <span id="currentDate"></span>
     </div>
 </div>
 
-<div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h3 style="font-family: 'Outfit';">System Monitoring</h3>
-        <span class="badge badge-info">Real-time Updates</span>
+<!-- Pending Alerts -->
+{% if pending_volunteers > 0 or pending_requests > 0 %}
+<div class="pending-alerts">
+    {% if pending_volunteers > 0 %}
+    <a href="/admin_approve_volunteers/" class="alert-card warning">
+        <div class="alert-icon"><i class="fas fa-user-clock"></i></div>
+        <div>
+            <div class="alert-count">{{ pending_volunteers }}</div>
+            <div class="alert-text">Volunteers Awaiting Approval</div>
+        </div>
+    </a>
+    {% endif %}
+    {% if pending_requests > 0 %}
+    <a href="/admin_view_resource_stock/" class="alert-card danger">
+        <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <div>
+            <div class="alert-count">{{ pending_requests }}</div>
+            <div class="alert-text">Pending Resource Requests</div>
+        </div>
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+    <div class="stat-card-new blue">
+        <div class="stat-accent"></div>
+        <div class="stat-icon"><i class="fas fa-map-location-dot"></i></div>
+        <div class="stat-number count-up" data-target="{{ districts }}">0</div>
+        <div class="stat-title">Districts Covered</div>
     </div>
-    <div class="table-container">
-        <table>
+    <div class="stat-card-new emerald">
+        <div class="stat-accent"></div>
+        <div class="stat-icon"><i class="fas fa-user-shield"></i></div>
+        <div class="stat-number count-up" data-target="{{ staff }}">0</div>
+        <div class="stat-title">District Officers</div>
+    </div>
+    <div class="stat-card-new violet">
+        <div class="stat-accent"></div>
+        <div class="stat-icon"><i class="fas fa-people-group"></i></div>
+        <div class="stat-number count-up" data-target="{{ volunteers }}">0</div>
+        <div class="stat-title">Active Volunteers</div>
+    </div>
+    <div class="stat-card-new amber">
+        <div class="stat-accent"></div>
+        <div class="stat-icon"><i class="fas fa-users"></i></div>
+        <div class="stat-number count-up" data-target="{{ citizens_count }}">0</div>
+        <div class="stat-title">Registered Citizens</div>
+    </div>
+    <div class="stat-card-new rose">
+        <div class="stat-accent"></div>
+        <div class="stat-icon"><i class="fas fa-clipboard-list"></i></div>
+        <div class="stat-number count-up" data-target="{{ total_requests }}">0</div>
+        <div class="stat-title">Total Requests</div>
+    </div>
+    <div class="stat-card-new cyan">
+        <div class="stat-accent"></div>
+        <div class="stat-icon"><i class="fas fa-tags"></i></div>
+        <div class="stat-number count-up" data-target="{{ categories_count }}">0</div>
+        <div class="stat-title">Resource Categories</div>
+    </div>
+</div>
+
+<!-- Two Column: Quick Actions + Recent Activity -->
+<div class="two-col">
+    <!-- Quick Actions -->
+    <div class="section-card">
+        <div class="section-header">
+            <h3><i class="fas fa-bolt" style="color: #f59e0b; margin-right: 8px;"></i>Quick Actions</h3>
+        </div>
+        <div class="quick-actions-grid">
+            <a href="/admin_add_resource_category/" class="action-card">
+                <div class="action-icon"><i class="fas fa-folder-plus"></i></div>
+                <span class="action-label">New Category</span>
+            </a>
+            <a href="/admin_view_resource_stock/" class="action-card">
+                <div class="action-icon"><i class="fas fa-warehouse"></i></div>
+                <span class="action-label">Stock Inventory</span>
+            </a>
+            <a href="/admin_approve_volunteers/" class="action-card">
+                <div class="action-icon"><i class="fas fa-user-check"></i></div>
+                <span class="action-label">Approve Volunteers</span>
+            </a>
+            <a href="/admin_add_staff/" class="action-card">
+                <div class="action-icon"><i class="fas fa-user-plus"></i></div>
+                <span class="action-label">Add Officer</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="section-card">
+        <div class="section-header">
+            <h3><i class="fas fa-clock-rotate-left" style="color: #6366f1; margin-right: 8px;"></i>Recent Activity</h3>
+            <span class="badge badge-info">Latest</span>
+        </div>
+        <div class="activity-feed">
+            {% for r in recent_requests %}
+            <div class="activity-item">
+                <div class="activity-dot {{ r.status|lower }}"></div>
+                <div class="activity-info">
+                    <div class="activity-title">{{ r.category.name }}</div>
+                    <div class="activity-meta">{{ r.user.name }} &middot; {{ r.district.name }}</div>
+                </div>
+                <span class="activity-badge {{ r.status|lower }}">{{ r.status }}</span>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <p>No recent activity yet</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- System Monitoring -->
+<div class="section-card">
+    <div class="section-header">
+        <h3><i class="fas fa-satellite-dish" style="color: #2563eb; margin-right: 8px;"></i>District Overview</h3>
+        <span class="badge badge-info"><i class="fas fa-circle" style="font-size: 0.5rem; margin-right: 4px; color: #10b981;"></i>Live Data</span>
+    </div>
+    <div class="table-container" style="border: none; box-shadow: none;">
+        <table class="monitor-table">
             <thead>
                 <tr>
                     <th>District</th>
-                    <th>Officer</th>
+                    <th>Officers</th>
                     <th>Volunteers</th>
-
                 </tr>
             </thead>
             <tbody>
                 {% if districts_list %}
                     {% for d in districts_list %}
                     <tr>
-                        <td>{{ d.name }}</td>
-                        <td>{{ d.staff_count }} Active</td>
-                        <td>{{ d.volunteer_count }} Online</td>
-
+                        <td>
+                            <div class="district-name">
+                        <div class="district-avatar" style="background: hsl({{ forloop.counter|add:'200' }}, 65%, 50%);">
+                                    {{ d.name|first }}
+                                </div>
+                                {{ d.name }}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="count-pill officers">
+                                <i class="fas fa-user-shield" style="font-size: 0.75rem;"></i> {{ d.staff_count }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="count-pill volunteers">
+                                <i class="fas fa-people-group" style="font-size: 0.75rem;"></i> {{ d.volunteer_count }}
+                            </span>
+                        </td>
                     </tr>
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">No district data available.</td>
+                        <td colspan="3">
+                            <div class="empty-state">
+                                <i class="fas fa-map-marked-alt"></i>
+                                <p>No districts added yet. Start by adding a district.</p>
+                            </div>
+                        </td>
                     </tr>
                 {% endif %}
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+// Set current date
+const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', options);
+
+// Animated counter
+function animateCounters() {
+    const counters = document.querySelectorAll('.count-up');
+    counters.forEach(counter => {
+        const target = +counter.getAttribute('data-target');
+        const duration = 1200;
+        const startTime = performance.now();
+
+        function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            // Ease out cubic
+            const eased = 1 - Math.pow(1 - progress, 3);
+            counter.textContent = Math.floor(eased * target);
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            } else {
+                counter.textContent = target;
+            }
+        }
+        requestAnimationFrame(update);
+    });
+}
+
+// Run on page load
+animateCounters();
+</script>
+
 {% endblock %}
