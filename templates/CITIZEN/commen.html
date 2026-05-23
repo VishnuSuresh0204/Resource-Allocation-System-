@@ -278,6 +278,15 @@
         </header>
 
         <main class="main-content">
+            {% if messages %}
+                <div style="margin-bottom: 2rem;">
+                    {% for message in messages %}
+                        <div class="badge badge-{% if message.tags == 'error' %}danger{% else %}success{% endif %}" style="padding: 1rem; border-radius: 8px; display: block; margin-bottom: 1rem; text-align: left;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
             {% block citizen_body %}{% endblock %}
         </main>
     </div>
