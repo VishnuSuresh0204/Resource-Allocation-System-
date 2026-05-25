@@ -71,7 +71,15 @@
 
             <div id="address_section" class="form-group" style="margin-bottom: 24px; display: none;">
                 <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">Pickup Address</label>
-                <textarea name="pickup_address" id="pickup_address" class="form-control" placeholder="Provide full address and landmark for volunteer pickup" style="resize: vertical; min-height: 80px;"></textarea>
+                <textarea name="pickup_address" id="pickup_address" class="form-control" placeholder="Provide full address and landmark for volunteer pickup" style="resize: vertical; min-height: 80px; margin-bottom: 15px;"></textarea>
+                
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">Pin Pickup Location on Map <span style="font-weight: normal; color: #666; font-size: 0.85em;">(Recommended)</span></label>
+                <button type="button" id="getLocationBtn" class="btn btn-outline" style="margin-bottom: 10px; font-size: 0.85rem; padding: 5px 10px; border: 1px solid var(--border); border-radius: 5px; cursor: pointer;">
+                    <i class="fas fa-location-crosshairs"></i> Get Current Location
+                </button>
+                <div id="map" style="height: 200px; border-radius: 8px; border: 1px solid var(--border); z-index: 1;"></div>
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
             </div>
 
             <button type="submit" class="btn-submit" style="background: var(--primary); color: white; padding: 1rem; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2); font-family: inherit;">
@@ -85,16 +93,72 @@
     const assistanceCheckbox = document.getElementById('need_assistance');
     const addressSection = document.getElementById('address_section');
     const addressInput = document.getElementById('pickup_address');
+    let map;
+    let marker;
 
     assistanceCheckbox.addEventListener('change', function() {
         if (this.checked) {
             addressSection.style.display = 'block';
             addressInput.setAttribute('required', 'required');
+            if (map) {
+                setTimeout(() => map.invalidateSize(), 100);
+            }
         } else {
             addressSection.style.display = 'none';
             addressInput.removeAttribute('required');
             addressInput.value = '';
         }
+    });
+</script>
+
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        map = L.map('map').setView([10.8505, 76.2711], 7); // Default to Kerala
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        map.on('click', function(e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+            
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng).addTo(map);
+            }
+            
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+        });
+
+        document.getElementById('getLocationBtn').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+                    var latlng = L.latLng(lat, lng);
+                    
+                    map.setView(latlng, 15);
+                    
+                    if (marker) {
+                        marker.setLatLng(latlng);
+                    } else {
+                        marker = L.marker(latlng).addTo(map);
+                    }
+                    
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lng;
+                }, function() {
+                    alert("Unable to retrieve your location.");
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        });
     });
 </script>
 {% endblock %}

@@ -136,6 +136,9 @@ class StaffResourceRequirement(models.Model):
     quantity_satisfied = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     unit = models.CharField(max_length=50, help_text="e.g., kg, packets, units")
     description = models.TextField()
+    location_details = models.TextField(null=True, blank=True)
+    latitude = models.CharField(max_length=50, null=True, blank=True)
+    longitude = models.CharField(max_length=50, null=True, blank=True)
     status = models.CharField(max_length=20, default='Open')  # 'Open' / 'Fulfilled'
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -163,6 +166,8 @@ class DonationOffer(models.Model):
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
     need_assistance = models.BooleanField(default=False)
     pickup_address = models.TextField(null=True, blank=True)
+    latitude = models.CharField(max_length=50, null=True, blank=True)
+    longitude = models.CharField(max_length=50, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     assigned_volunteer = models.ForeignKey(Volunteer, on_delete=models.SET_NULL, null=True, blank=True)
     remarks = models.TextField(null=True, blank=True)

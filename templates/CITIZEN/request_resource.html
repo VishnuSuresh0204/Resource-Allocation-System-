@@ -79,6 +79,16 @@
             </div>
 
             <div class="form-group">
+                <label>Pin Location on Map <span style="font-weight: normal; color: #666; font-size: 0.85em;">(Optional but recommended)</span></label>
+                <button type="button" id="getLocationBtn" class="btn btn-outline" style="margin-bottom: 10px; font-size: 0.85rem; padding: 5px 10px;">
+                    <i class="fas fa-location-crosshairs"></i> Get Current Location
+                </button>
+                <div id="map" style="height: 250px; border-radius: 8px; border: 1px solid var(--border); z-index: 1;"></div>
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
+            </div>
+
+            <div class="form-group">
                 <label>Additional Information</label>
                 <textarea name="description" class="form-control" rows="3" placeholder="Any specific requirements or notes for the delivery team..."></textarea>
             </div>
@@ -89,4 +99,58 @@
         </form>
     </div>
 </div>
+
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var map = L.map('map').setView([10.8505, 76.2711], 7); // Default to Kerala
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker;
+
+        map.on('click', function(e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+            
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng).addTo(map);
+            }
+            
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+        });
+
+        document.getElementById('getLocationBtn').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+                    var latlng = L.latLng(lat, lng);
+                    
+                    map.setView(latlng, 15);
+                    
+                    if (marker) {
+                        marker.setLatLng(latlng);
+                    } else {
+                        marker = L.marker(latlng).addTo(map);
+                    }
+                    
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lng;
+                }, function() {
+                    alert("Unable to retrieve your location.");
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        });
+    });
+</script>
+
 {% endblock %}

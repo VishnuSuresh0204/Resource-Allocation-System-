@@ -23,7 +23,7 @@
                 <tr>
                     <td>
                         <div style="font-weight: 700;">{{ r.user.name }}</div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); max-width: 200px;">{{ r.location_details|truncatechars:60 }}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); max-width: 200px;">{{ r.location_details|truncatechars:60 }}</div>{% if r.latitude and r.longitude %}<a href="https://www.google.com/maps?q={{ r.latitude }},{{ r.longitude }}" target="_blank" style="font-size: 0.75rem; color: var(--primary); text-decoration: none; display: inline-block; margin-top: 3px;"><i class="fas fa-map-marker-alt"></i> View on Map</a>{% endif %}
                     </td>
                     <td>
                         <div style="font-weight: 600;">{{ r.category.name }}</div>

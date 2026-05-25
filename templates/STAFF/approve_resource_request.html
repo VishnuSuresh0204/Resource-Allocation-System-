@@ -26,7 +26,7 @@
             </div>
             <div>
                 <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Delivery Location</label>
-                <div style="font-weight: 600; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-top: 5px;">{{ req.location_details }}</div>
+                <div style="font-weight: 600; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-top: 5px;">{{ req.location_details }}{% if req.latitude and req.longitude %} <a href="https://www.google.com/maps?q={{ req.latitude }},{{ req.longitude }}" target="_blank" style="font-size: 0.85rem; color: var(--primary); text-decoration: none; display: inline-block; margin-top: 5px; margin-left: 10px;"><i class="fas fa-map-marker-alt"></i> View on Map</a>{% endif %}</div>
             </div>
             <div>
                 <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Note / Description</label>

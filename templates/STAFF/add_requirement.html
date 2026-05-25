@@ -50,9 +50,79 @@
             <textarea name="description" class="form-control" required placeholder="Describe the specific requirements (e.g. expiry dates, packaging, urgent need)" style="width: 100%; padding: 0.85rem 1.15rem; border: 1.5px solid #cbd5e1; border-radius: 10px; background: #f8fafc; resize: vertical; min-height: 100px;"></textarea>
         </div>
 
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">Delivery Location / Hub Address</label>
+            <textarea name="location_details" class="form-control" placeholder="Provide the drop-off location or hub address..." style="width: 100%; padding: 0.85rem 1.15rem; border: 1.5px solid #cbd5e1; border-radius: 10px; background: #f8fafc; resize: vertical; min-height: 60px;"></textarea>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 24px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">Pin Drop-off Location on Map <span style="font-weight: normal; color: #666; font-size: 0.85em;">(Optional)</span></label>
+            <button type="button" id="getLocationBtn" class="btn btn-outline" style="margin-bottom: 10px; font-size: 0.85rem; padding: 5px 10px; border: 1px solid var(--border); border-radius: 5px; cursor: pointer;">
+                <i class="fas fa-location-crosshairs"></i> Get Current Location
+            </button>
+            <div id="map" style="height: 250px; border-radius: 8px; border: 1px solid var(--border); z-index: 1;"></div>
+            <input type="hidden" name="latitude" id="latitude">
+            <input type="hidden" name="longitude" id="longitude">
+        </div>
+
         <button type="submit" class="btn-submit" style="background: var(--primary); color: white; padding: 1rem; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); font-family: inherit;">
             <i class="fas fa-bullhorn"></i> Broadcast Request
         </button>
     </form>
 </div>
+</div>
+
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var map = L.map('map').setView([10.8505, 76.2711], 7); // Default to Kerala
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker;
+
+        map.on('click', function(e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+            
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng).addTo(map);
+            }
+            
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+        });
+
+        document.getElementById('getLocationBtn').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+                    var latlng = L.latLng(lat, lng);
+                    
+                    map.setView(latlng, 15);
+                    
+                    if (marker) {
+                        marker.setLatLng(latlng);
+                    } else {
+                        marker = L.marker(latlng).addTo(map);
+                    }
+                    
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lng;
+                }, function() {
+                    alert("Unable to retrieve your location.");
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        });
+    });
+</script>
+
 {% endblock %}

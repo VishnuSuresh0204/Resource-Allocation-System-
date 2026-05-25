@@ -59,7 +59,7 @@
                 
                 <!-- Pickup Address -->
                 <td style="padding: 1rem 0.75rem; max-width: 200px; font-size: 0.85rem; color: var(--text-muted); white-space: normal; word-break: break-word;">
-                    {% if d.pickup_address %}{{ d.pickup_address }}{% else %}<span style="color: #cbd5e1; font-style: italic;">N/A</span>{% endif %}
+                    {% if d.pickup_address %}{{ d.pickup_address }}{% if d.latitude and d.longitude %}<br><a href="https://www.google.com/maps?q={{ d.latitude }},{{ d.longitude }}" target="_blank" style="font-size: 0.75rem; color: var(--primary); text-decoration: none; display: inline-block; margin-top: 3px;"><i class="fas fa-map-marker-alt"></i> View on Map</a>{% endif %}{% else %}<span style="color: #cbd5e1; font-style: italic;">N/A</span>{% endif %}
                 </td>
                 
                 <!-- Status -->

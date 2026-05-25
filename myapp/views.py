@@ -313,7 +313,12 @@ def citizen_home(request):
 def citizen_request_resource(request):
     c = Citizen.objects.get(loginid_id=request.session["lid"])
     if request.method == "POST":
-        UserResourceRequest.objects.create(user=c, district=c.district, category_id=request.POST.get('category'), quantity_needed=request.POST.get('quantity'), priority=request.POST.get('priority'), description=request.POST.get('description'), location_details=request.POST.get('location'))
+        UserResourceRequest.objects.create(
+            user=c, district=c.district, category_id=request.POST.get('category'), 
+            quantity_needed=request.POST.get('quantity'), priority=request.POST.get('priority'), 
+            description=request.POST.get('description'), location_details=request.POST.get('location'),
+            latitude=request.POST.get('latitude'), longitude=request.POST.get('longitude')
+        )
         messages.success(request, "Request Submitted Successfully")
         return redirect("/citizen_view_resource_requests")
     return render(request, 'CITIZEN/request_resource.html', {'categories': ResourceCategory.objects.all()})
@@ -401,7 +406,10 @@ def staff_add_requirement(request):
             item_name=item_name,
             quantity_needed=Decimal(quantity_needed),
             unit=unit,
-            description=description
+            description=description,
+            location_details=request.POST.get('location_details'),
+            latitude=request.POST.get('latitude'),
+            longitude=request.POST.get('longitude')
         )
         messages.success(request, "Resource Requirement Added successfully")
         return redirect("/staff_view_requirements")
@@ -531,6 +539,8 @@ def citizen_donate(request):
             quantity=qty,
             need_assistance=need_assistance,
             pickup_address=pickup_address,
+            latitude=request.POST.get('latitude'),
+            longitude=request.POST.get('longitude'),
             status='Pending'
         )
         messages.success(request, "Donation Offer submitted successfully.")
@@ -593,6 +603,8 @@ def volunteer_donate(request):
             quantity=qty,
             need_assistance=need_assistance,
             pickup_address=pickup_address,
+            latitude=request.POST.get('latitude'),
+            longitude=request.POST.get('longitude'),
             status='Pending'
         )
         messages.success(request, "Donation Offer submitted successfully.")
