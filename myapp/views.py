@@ -418,6 +418,57 @@ def staff_add_requirement(request):
     return render(request, 'STAFF/add_requirement.html', {'categories': categories, 'staff': s})
 
 
+
+def staff_edit_requirement(request):
+    s = Staff.objects.get(loginid_id=request.session.get('lid'))
+    if s.status != 'active':
+        messages.error(request, 'Your account has been blocked or is inactive.')
+        return redirect('/login')
+    
+    req_id = request.GET.get('id')
+    try:
+        req = StaffResourceRequirement.objects.get(id=req_id, district=s.district)
+    except StaffResourceRequirement.DoesNotExist:
+        messages.error(request, 'Requirement not found.')
+        return redirect('/staff_view_requirements')
+
+    if request.method == 'POST':
+        req.category_id = request.POST.get('category')
+        req.item_name = request.POST.get('item_name')
+        req.quantity_needed = Decimal(request.POST.get('quantity_needed'))
+        req.unit = request.POST.get('unit')
+        req.description = request.POST.get('description')
+        req.location_details = request.POST.get('location_details')
+        req.latitude = request.POST.get('latitude')
+        req.longitude = request.POST.get('longitude')
+        req.save()
+        messages.success(request, 'Resource Requirement updated successfully.')
+        return redirect('/staff_view_requirements')
+        
+    categories = ResourceCategory.objects.all()
+    return render(request, 'STAFF/edit_requirement.html', {'req': req, 'categories': categories})
+
+def staff_toggle_requirement_status(request):
+    s = Staff.objects.get(loginid_id=request.session.get('lid'))
+    if s.status != 'active':
+        messages.error(request, 'Your account has been blocked or is inactive.')
+        return redirect('/login')
+        
+    req_id = request.GET.get('id')
+    try:
+        req = StaffResourceRequirement.objects.get(id=req_id, district=s.district)
+        if req.status == 'Open':
+            req.status = 'Fulfilled'
+            messages.success(request, 'Requirement manually closed.')
+        else:
+            req.status = 'Open'
+            messages.success(request, 'Requirement reopened successfully.')
+        req.save()
+    except StaffResourceRequirement.DoesNotExist:
+        messages.error(request, 'Requirement not found.')
+        
+    return redirect('/staff_view_requirements')
+
 def staff_view_requirements(request):
     s = Staff.objects.get(loginid_id=request.session["lid"])
     if s.status != "active":
