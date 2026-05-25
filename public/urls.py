@@ -39,6 +39,8 @@ urlpatterns = [
     path('staff_view_resource_requests/', views.staff_view_resource_requests),
     path('staff_approve_resource_request/', views.staff_approve_resource_request),
     path('staff_add_requirement/', views.staff_add_requirement),
+    path('staff_edit_requirement/', views.staff_edit_requirement),
+    path('staff_toggle_requirement_status/', views.staff_toggle_requirement_status),
     path('staff_view_requirements/', views.staff_view_requirements),
     path('staff_view_donations/', views.staff_view_donations),
     path('staff_approve_donation/', views.staff_approve_donation),
