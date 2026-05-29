@@ -1,5 +1,33 @@
-venv/
+# Python
+*.py[cod]
 __pycache__/
+*.so
+*.egg
+*.egg-info/
+.eggs/
+*.pyd
+
+# Virtual environment
+venv/
+
+# Django
+*.log
+*.pot
 *.pyc
+*.pyo
+*.pyd
 db.sqlite3
+db.sqlite3-journal
+/public/media/
+public/media/
+
+# VS Code
+.vscode/
+
+# Environment variables
 .env
+.env.*
+
+# System files
+.DS_Store
+Thumbs.db
