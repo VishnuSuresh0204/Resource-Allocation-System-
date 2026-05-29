@@ -1,0 +1,164 @@
+{% extends 'CITIZEN/commen.html' %}
+
+{% block title %}Donate Resource - ERA System{% endblock %}
+
+{% block citizen_body %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+    <div>
+        <h1 style="font-family: 'Outfit'; font-size: 2rem;">Donate Resource</h1>
+        <p style="color: var(--text-muted);">Offer resources to the control center for <strong>{{ citizen.district.name }}</strong> district.</p>
+    </div>
+    <a href="/citizen_view_requirements/" class="btn btn-outline" style="border: 1px solid var(--border); color: var(--text-main); background: #ffffff; padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 600;"><i class="fas fa-arrow-left"></i> Back to Requirements</a>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem; max-width: 1100px; margin: 0 auto;">
+    <!-- Requirement Details Card -->
+    <div class="card" style="background: #ffffff; border-radius: 16px; border: 1px solid var(--border); padding: 2rem; box-shadow: var(--shadow); height: fit-content;">
+        <h3 style="font-family: 'Outfit'; margin-bottom: 1.5rem; color: var(--text-main); border-bottom: 2px solid var(--border); padding-bottom: 10px;">Requirement Details</h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Resource Category</span>
+                <div style="font-weight: 600; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                    <i class="fas fa-tag" style="color: var(--primary);"></i> {{ req.category.name }}
+                </div>
+            </div>
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Item Name</span>
+                <div style="font-weight: 700; font-size: 1.2rem; color: var(--primary); margin-top: 2px;">{{ req.item_name }}</div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid var(--border);">
+                <div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Total Needed</span>
+                    <div style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);">{{ req.quantity_needed }} {{ req.unit }}</div>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Remaining Needed</span>
+                    <div style="font-size: 1.1rem; font-weight: 700; color: #d97706;">{{ req.remaining }} {{ req.unit }}</div>
+                </div>
+            </div>
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Description</span>
+                <p style="font-size: 0.95rem; color: var(--text-main); margin-top: 4px; line-height: 1.5;">{{ req.description }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donation Offer Form -->
+    <div class="card" style="background: #ffffff; border-radius: 16px; border: 1px solid var(--border); padding: 2rem; box-shadow: var(--shadow);">
+        <h3 style="font-family: 'Outfit'; margin-bottom: 1.5rem; color: var(--text-main); border-bottom: 2px solid var(--border); padding-bottom: 10px;">Submit Donation Offer</h3>
+        
+        <form method="POST" action="/citizen_donate/">
+            {% csrf_token %}
+            <input type="hidden" name="req_id" value="{{ req.id }}">
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">Quantity to Donate (Max: {{ req.remaining }} {{ req.unit }})</label>
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="number" step="0.01" name="quantity" min="0.01" max="{{ req.remaining }}" class="form-control" required placeholder="0.00" style="padding-right: 4.5rem;">
+                    <span style="position: absolute; right: 15px; font-weight: 600; color: var(--text-muted); font-size: 0.9rem;">{{ req.unit }}</span>
+                </div>
+                <small style="color: var(--text-muted); margin-top: 4px; display: block;">Offer quantity cannot exceed the remaining needed amount of {{ req.remaining }} {{ req.unit }}.</small>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
+                <label style="display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">
+                    <input type="checkbox" name="need_assistance" id="need_assistance" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span>Request Volunteer Pickup Assistance</span>
+                </label>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-left: 28px; margin-top: 4px;">Check this if you are unable to drop off the donation yourself. An approved volunteer from your district will be assigned to collect it.</p>
+            </div>
+
+            <div id="address_section" class="form-group" style="margin-bottom: 24px; display: none;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">Pickup Address</label>
+                <textarea name="pickup_address" id="pickup_address" class="form-control" placeholder="Provide full address and landmark for volunteer pickup" style="resize: vertical; min-height: 80px; margin-bottom: 15px;"></textarea>
+                
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">Pin Pickup Location on Map <span style="font-weight: normal; color: #666; font-size: 0.85em;">(Recommended)</span></label>
+                <button type="button" id="getLocationBtn" class="btn btn-outline" style="margin-bottom: 10px; font-size: 0.85rem; padding: 5px 10px; border: 1px solid var(--border); border-radius: 5px; cursor: pointer;">
+                    <i class="fas fa-location-crosshairs"></i> Get Current Location
+                </button>
+                <div id="map" style="height: 200px; border-radius: 8px; border: 1px solid var(--border); z-index: 1;"></div>
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
+            </div>
+
+            <button type="submit" class="btn-submit" style="background: var(--primary); color: white; padding: 1rem; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); font-family: inherit;">
+                <i class="fas fa-hand-holding-heart"></i> Submit Donation Offer
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const assistanceCheckbox = document.getElementById('need_assistance');
+    const addressSection = document.getElementById('address_section');
+    const addressInput = document.getElementById('pickup_address');
+    let map;
+    let marker;
+
+    assistanceCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            addressSection.style.display = 'block';
+            addressInput.setAttribute('required', 'required');
+            if (map) {
+                setTimeout(() => map.invalidateSize(), 100);
+            }
+        } else {
+            addressSection.style.display = 'none';
+            addressInput.removeAttribute('required');
+            addressInput.value = '';
+        }
+    });
+</script>
+
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        map = L.map('map').setView([10.8505, 76.2711], 7); // Default to Kerala
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        map.on('click', function(e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+            
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng).addTo(map);
+            }
+            
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+        });
+
+        document.getElementById('getLocationBtn').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+                    var latlng = L.latLng(lat, lng);
+                    
+                    map.setView(latlng, 15);
+                    
+                    if (marker) {
+                        marker.setLatLng(latlng);
+                    } else {
+                        marker = L.marker(latlng).addTo(map);
+                    }
+                    
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lng;
+                }, function() {
+                    alert("Unable to retrieve your location.");
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    body {
+        background-image: radial-gradient(rgba(248, 250, 252, 0.94), rgba(248, 250, 252, 0.97)), url('/media/kerala_flood_rescue.png');
+        background-attachment: fixed;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .hero-section {
+        position: relative;
+        padding: 80px 0;
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.6) 100%), 
+                    url('/media/kerala_flood_rescue.png') no-repeat center center/cover;
+        border-radius: 30px;
+        margin-bottom: 60px;
+        overflow: hidden;
+    }
+
+    .hero-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 40px;
+        align-items: center;
+        padding: 0 40px;
+    }
+
+    .hero-text h1 {
+        font-size: 3.5rem;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        color: #ffffff;
+    }
+
+    .hero-text p {
+        font-size: 1.15rem;
+        color: #e2e8f0;
+        margin-bottom: 2.5rem;
+        max-width: 550px;
+    }
+
+    .hero-image {
+        position: relative;
+    }
+
+    .glass-stats-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 30px;
+        border-radius: 24px;
+        color: white;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        transform: rotate(1deg);
+        transition: all 0.3s ease;
+    }
+    
+    .glass-stats-card:hover {
+        transform: translateY(-5px) rotate(0deg);
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .glass-stats-card h3 {
+        font-size: 1.35rem;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #f59e0b;
+    }
+
+    .stat-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+    }
+
+    .stat-label {
+        opacity: 0.8;
+    }
+
+    .stat-value {
+        font-weight: 600;
+        color: #eff6ff;
+    }
+
+    .stat-divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.15);
+        margin: 15px 0;
+    }
+
+    .stat-note {
+        font-size: 0.85rem;
+        line-height: 1.4;
+        opacity: 0.9;
+        font-style: italic;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+        margin-bottom: 80px;
+    }
+
+    .feature-card {
+        background: var(--surface);
+        padding: 35px;
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary);
+    }
+
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--primary-light);
+        color: var(--primary);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+
+    .feature-card h3 {
+        font-size: 1.25rem;
+        margin-bottom: 12px;
+        color: var(--text-main);
+    }
+
+    .feature-card p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+    .resource-strip {
+        background: var(--text-main);
+        color: white;
+        padding: 60px;
+        border-radius: 30px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin-bottom: 80px;
+        flex-wrap: wrap;
+        gap: 30px;
+    }
+
+    .resource-item {
+        text-align: center;
+    }
+
+    .resource-item i {
+        font-size: 2rem;
+        color: var(--accent);
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .resource-item span {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        opacity: 0.8;
+    }
+
+    .cta-banner {
+        text-align: center;
+        padding: 80px 40px;
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.9) 0%, rgba(29, 78, 216, 0.95) 100%),
+                    url('/media/kerala_flood_rescue.png') no-repeat center center/cover;
+        color: white;
+        border-radius: 30px;
+        margin-bottom: 40px;
+    }
+
+    .cta-banner h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-white {
+        background: white;
+        color: var(--primary);
+        padding: 1rem 2.5rem;
+        border-radius: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-block;
+        box-shadow: var(--shadow);
+    }
+
+    .btn-white:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    @media (max-width: 992px) {
+        .hero-grid { grid-template-columns: 1fr; text-align: center; }
+        .hero-text p { margin-left: auto; margin-right: auto; }
+        .hero-image { display: none; }
+    }
+</style>
+
+<section class="hero-section">
+    <div class="hero-grid">
+        <div class="hero-text">
+            <span class="badge badge-info mb-4" style="background: rgba(224, 242, 254, 0.2); color: #e0f2fe; border: 1px solid rgba(224, 242, 254, 0.3);">Centralized Crisis Management</span>
+            <h1>Emergency <span style="color: #60a5fa">Resource</span> Allocation</h1>
+            <p>A sophisticated platform for monitoring, allocating, and coordinating essential life-saving resources during natural disasters and emergencies.</p>
+            <div style="display: flex; gap: 15px; justify-content: flex-start; flex-wrap: wrap;">
+                <a href="/register_citizen/" class="btn-primary" style="width: auto; padding: 1rem 2rem; text-decoration: none;">Request Assistance</a>
+                <a href="/register_volunteer/" style="padding: 1rem 2rem; color: #ffffff; font-weight: 600; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 12px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px);">Become a Volunteer</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="glass-stats-card">
+                <h3><i class="fas fa-triangle-exclamation"></i> Active Response</h3>
+                <div class="stat-row">
+                    <span class="stat-label">Region:</span>
+                    <span class="stat-value">Kerala, India</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Scenario:</span>
+                    <span class="stat-value">Flood & Monsoon Crisis</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Operational Hubs:</span>
+                    <span class="stat-value">Active in 14 Districts</span>
+                </div>
+                <div class="stat-divider"></div>
+                <p class="stat-note">Rapidly coordinating food, drinking water, medical aid, and rescue boat deployments to flood-affected communities.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="features-grid">
+    <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-truck-loading"></i></div>
+        <h3>Stock Monitoring</h3>
+        <p>Real-time tracking of food, water, and medical supplies across all districts to prevent shortages.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-hand-holding-heart"></i></div>
+        <h3>Priority Allocation</h3>
+        <p>Smart verification and priority-based distribution to ensure aid reaches those in critical need first.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-users-viewfinder"></i></div>
+        <h3>Volunteer Coordination</h3>
+        <p>Seamless communication between district officers and field volunteers for efficient resource delivery.</p>
+    </div>
+</div>
+
+<div class="resource-strip">
+    <div class="resource-item">
+        <i class="fas fa-apple-whole"></i>
+        <span>Food Supplies</span>
+    </div>
+    <div class="resource-item">
+        <i class="fas fa-droplet"></i>
+        <span>Drinking Water</span>
+    </div>
+    <div class="resource-item">
+        <i class="fas fa-kit-medical"></i>
+        <span>Medical Aid</span>
+    </div>
+    <div class="resource-item">
+        <i class="fas fa-tents"></i>
+        <span>Emergency Shelter</span>
+    </div>
+    <div class="resource-item">
+        <i class="fas fa-ship"></i>
+        <span>Rescue Boats</span>
+    </div>
+</div>
+
+<section class="cta-banner">
+    <h2>Help Us Save Lives</h2>
+    <p class="mb-4">Join our network of district officers and volunteers to ensure efficient aid distribution during disasters.</p>
+    <a href="/register_volunteer/" class="btn-white">Join the Response Team</a>
+</section>
+
+{% endblock %}

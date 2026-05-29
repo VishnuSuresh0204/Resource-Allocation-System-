@@ -1,0 +1,65 @@
+{% extends 'STAFF/commen.html' %}
+
+{% block staff_body %}
+<div class="page-header">
+    <h1>Inventory Management</h1>
+    <a href="/staff_add_stock/" class="btn btn-primary"><i class="fas fa-plus"></i> Update Stock</a>
+</div>
+
+<div class="grid grid-3 mb-4">
+    <div class="card" style="padding: 1.5rem;">
+        <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Total Items</span>
+        <h2 style="font-family: 'Outfit'; margin-top: 5px;">{{ stock.count }}</h2>
+    </div>
+    <div class="card" style="padding: 1.5rem;">
+        <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">District</span>
+        <h2 style="font-family: 'Outfit'; margin-top: 5px;">{{ staff.district.name }}</h2>
+    </div>
+    <div class="card" style="padding: 1.5rem;">
+        <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Last Inventory Sync</span>
+        <h2 style="font-family: 'Outfit'; margin-top: 5px; font-size: 1.2rem;">Today, {% now "H:i" %}</h2>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Category</th>
+                    <th>Available Quantity</th>
+                    <th>Last Updated</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in stock %}
+                <tr>
+                    <td><strong>{{ s.item_name }}</strong></td>
+                    <td>
+                        <span class="badge badge-info">{{ s.category.name }}</span>
+                    </td>
+                    <td>
+                        <span style="font-weight: 700; font-size: 1.1rem; color: {% if s.quantity < 10 %}var(--danger){% else %}var(--success){% endif %};">
+                            {{ s.quantity }} {{ s.unit }}
+                        </span>
+                    </td>
+                    <td style="font-size: 0.85rem; color: var(--text-muted);">{{ s.last_updated|date:"M d, Y H:i" }}</td>
+                    <td>
+                        <a href="/staff_add_stock/" class="btn btn-outline btn-sm"><i class="fas fa-plus-circle"></i> Restock</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 4rem; color: var(--text-muted);">
+                        <i class="fas fa-warehouse" style="font-size: 3rem; display: block; margin-bottom: 1rem; opacity: 0.2;"></i>
+                        No stock records found for this district.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

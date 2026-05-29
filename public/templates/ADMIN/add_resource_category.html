@@ -1,0 +1,175 @@
+{% extends 'ADMIN/commen.html' %}
+
+{% block extra_css %}
+<style>
+    .form-card {
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        padding: 40px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        color: var(--text-main);
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.85rem 1.15rem;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 10px;
+        background: #f8fafc;
+        color: var(--text-main);
+        font-size: 0.95rem;
+        font-family: inherit;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    /* Custom File Upload */
+    .file-upload-wrapper {
+        position: relative;
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 30px;
+        text-align: center;
+        background: #f8fafc;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .file-upload-wrapper:hover {
+        border-color: var(--primary);
+        background: rgba(37, 99, 235, 0.02);
+    }
+
+    .file-upload-wrapper i {
+        font-size: 2rem;
+        color: var(--secondary);
+        margin-bottom: 12px;
+        transition: color 0.2s ease;
+    }
+
+    .file-upload-wrapper:hover i {
+        color: var(--primary);
+    }
+
+    .file-upload-wrapper input[type="file"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .file-upload-text {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    .btn-submit {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        transition: all 0.2s ease;
+    }
+
+    .btn-submit:hover {
+        background: #1d4ed8;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px -3px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+</style>
+{% endblock %}
+
+{% block admin_body %}
+<div class="page-header">
+    <h1>Resource Categories</h1>
+    <a href="/admin_manage_resource_categories/" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+
+<div class="form-card">
+    <h3 style="font-family: 'Outfit'; margin-bottom: 1.5rem; font-size: 1.4rem; color: var(--text-main);">Add New Category</h3>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Category Name</label>
+            <input type="text" name="name" class="form-control" required placeholder="e.g., Medical Supplies, Drinking Water">
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea name="description" class="form-control" rows="3" placeholder="Define what items fall under this category..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Category Icon (Optional)</label>
+            <div class="file-upload-wrapper">
+                <i class="fas fa-cloud-arrow-up" id="uploadIcon"></i>
+                <p class="file-upload-text" id="uploadText">Drag & drop or click to upload category icon</p>
+                <input type="file" name="icon" accept="image/*" onchange="previewImage(event)">
+                <div id="imagePreviewContainer" style="display: none; margin-top: 15px;">
+                    <img id="imagePreview" style="max-height: 120px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" />
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn-submit">
+            <i class="fas fa-plus"></i> Create Category
+        </button>
+    </form>
+</div>
+
+<script>
+function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = function() {
+        const output = document.getElementById('imagePreview');
+        output.src = reader.result;
+        document.getElementById('imagePreviewContainer').style.display = 'block';
+        document.getElementById('uploadIcon').style.display = 'none';
+        document.getElementById('uploadText').innerText = 'Change selected icon';
+    };
+    if (event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0]);
+    }
+}
+</script>
+{% endblock %}

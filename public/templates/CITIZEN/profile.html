@@ -1,0 +1,57 @@
+{% extends 'CITIZEN/commen.html' %}
+
+{% block citizen_body %}
+<div class="page-header">
+    <h1 style="font-family: 'Outfit';">My Profile</h1>
+    <a href="/citizen_edit_profile/" class="btn btn-primary"><i class="fas fa-user-pen"></i> Edit Profile</a>
+</div>
+
+<div style="display: grid; grid-template-columns: 300px 1fr; gap: 2rem;">
+    <div class="card" style="text-align: center; height: fit-content;">
+        {% if citizen.profile_pic %}
+        <img src="{{ citizen.profile_pic.url }}" alt="{{ citizen.name }}" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin-bottom: 1.5rem; border: 4px solid var(--primary-light);">
+        {% else %}
+        <div style="width: 150px; height: 150px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin: 0 auto 1.5rem;">
+            <i class="fas fa-user"></i>
+        </div>
+        {% endif %}
+        <h2 style="font-family: 'Outfit'; margin-bottom: 5px;">{{ citizen.name }}</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Citizen of {{ citizen.district.name }}</p>
+        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+            <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px;">Account Status</div>
+            <span class="badge badge-success">Active Account</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="font-family: 'Outfit'; margin-bottom: 2rem; border-bottom: 2px solid var(--primary-light); padding-bottom: 10px;">Personal Information</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            <div>
+                <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 5px;">Full Name</label>
+                <div style="font-weight: 600; font-size: 1.1rem;">{{ citizen.name }}</div>
+            </div>
+            <div>
+                <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 5px;">District</label>
+                <div style="font-weight: 600; font-size: 1.1rem;">{{ citizen.district.name }}</div>
+            </div>
+            <div>
+                <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 5px;">Email Address</label>
+                <div style="font-weight: 600; font-size: 1.1rem;">{{ citizen.email }}</div>
+            </div>
+            <div>
+                <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 5px;">Phone Number</label>
+                <div style="font-weight: 600; font-size: 1.1rem;">{{ citizen.phone }}</div>
+            </div>
+            <div style="grid-column: span 2;">
+                <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 5px;">Home Address</label>
+                <div style="font-weight: 600; font-size: 1.1rem; line-height: 1.5;">{{ citizen.address }}</div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 3rem; background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border);">
+            <h4 style="font-size: 0.9rem; margin-bottom: 1rem;"><i class="fas fa-shield-halved"></i> Privacy Note</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">Your contact information is only shared with authorized district officers and assigned volunteers during active resource delivery or rescue missions. Always ensure your phone number is up to date for emergency alerts.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

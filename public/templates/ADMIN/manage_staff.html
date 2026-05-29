@@ -1,0 +1,64 @@
+{% extends 'ADMIN/commen.html' %}
+
+{% block admin_body %}
+<div class="page-header">
+    <h1>District Officers</h1>
+    <a href="/admin_add_staff/" class="btn btn-primary"><i class="fas fa-plus"></i> Add Officer</a>
+</div>
+
+<div class="card">
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Officer</th>
+                    <th>District</th>
+                    <th>Contact</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in staff %}
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            {% if s.profile_pic %}
+                            <img src="{{ s.profile_pic.url }}" alt="" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                            {% endif %}
+                            <div>
+                                <div style="font-weight: 700;">{{ s.name }}</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">{{ s.designation }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-info">{{ s.district.name }}</span></td>
+                    <td style="font-size: 0.85rem;">
+                        <div><i class="fas fa-envelope"></i> {{ s.email }}</div>
+                        <div><i class="fas fa-phone"></i> {{ s.phone }}</div>
+                    </td>
+                    <td>
+                        <span class="badge {% if s.status == 'active' %}badge-success{% else %}badge-danger{% endif %}">
+                            {{ s.status|title }}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="/admin_edit_staff/?id={{ s.id }}" class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></a>
+                            <a href="/admin_staff_status/?id={{ s.id }}&act={% if s.status == 'active' %}blocked{% else %}active{% endif %}" 
+                               class="btn {% if s.status == 'active' %}btn-danger{% else %}btn-primary{% endif %} btn-sm">
+                                <i class="fas {% if s.status == 'active' %}fa-user-slash{% else %}fa-user-check{% endif %}"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 3rem; color: var(--text-muted);">No officers registered yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

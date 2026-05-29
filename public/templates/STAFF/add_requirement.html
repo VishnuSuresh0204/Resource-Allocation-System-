@@ -1,0 +1,128 @@
+{% extends 'STAFF/commen.html' %}
+
+{% block title %}Ask for Resource Requirement - ERA System{% endblock %}
+
+{% block staff_body %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+    <div>
+        <h1 style="font-family: 'Outfit'; font-size: 2rem;">Ask for Public Resource</h1>
+        <p style="color: var(--text-muted);">Request resource donations from citizens and volunteers in <strong>{{ staff.district.name }}</strong> district.</p>
+    </div>
+    <a href="/staff_view_requirements/" class="btn btn-outline" style="border: 1px solid var(--border); color: var(--text-main); background: #ffffff; padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 600;"><i class="fas fa-arrow-left"></i> View Asked Requirements</a>
+</div>
+
+<div class="card" style="max-width: 650px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid var(--border); padding: 2rem; box-shadow: var(--shadow);">
+    <div style="background: var(--primary-light); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--border);">
+        <h4 style="color: var(--primary); margin-bottom: 5px; font-family: 'Outfit';"><i class="fas fa-bullhorn"></i> Public Request Broadcast</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">This request will be visible to all registered citizens and volunteers in your district. They will be able to submit donation offers matching your item description.</p>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">Resource Category</label>
+            <select name="category" class="form-control" required style="appearance: auto; color: var(--text-main) !important; width: 100%; padding: 0.85rem 1.15rem; border: 1.5px solid #cbd5e1; border-radius: 10px; background: #f8fafc;">
+                <option value="">Select Category</option>
+                {% for c in categories %}
+                <option value="{{ c.id }}">{{ c.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">Item Name</label>
+            <input type="text" name="item_name" class="form-control" required placeholder="e.g., Paracetamol 500mg, Baby Food, Bottled Water" style="width: 100%; padding: 0.85rem 1.15rem; border: 1.5px solid #cbd5e1; border-radius: 10px; background: #f8fafc;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <div class="form-group">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">Quantity Needed</label>
+                <input type="number" step="0.01" name="quantity_needed" class="form-control" required placeholder="0.00" style="width: 100%; padding: 0.85rem 1.15rem; border: 1.5px solid #cbd5e1; border-radius: 10px; background: #f8fafc;">
+            </div>
+            <div class="form-group">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">Unit (e.g., Packs, Liters, KG)</label>
+                <input type="text" name="unit" class="form-control" required placeholder="e.g., packets, kg, bottles" style="width: 100%; padding: 0.85rem 1.15rem; border: 1.5px solid #cbd5e1; border-radius: 10px; background: #f8fafc;">
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 24px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">Description / Special Instructions</label>
+            <textarea name="description" class="form-control" required placeholder="Describe the specific requirements (e.g. expiry dates, packaging, urgent need)" style="width: 100%; padding: 0.85rem 1.15rem; border: 1.5px solid #cbd5e1; border-radius: 10px; background: #f8fafc; resize: vertical; min-height: 100px;"></textarea>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">Delivery Location / Hub Address</label>
+            <textarea name="location_details" class="form-control" placeholder="Provide the drop-off location or hub address..." style="width: 100%; padding: 0.85rem 1.15rem; border: 1.5px solid #cbd5e1; border-radius: 10px; background: #f8fafc; resize: vertical; min-height: 60px;"></textarea>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 24px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">Pin Drop-off Location on Map <span style="font-weight: normal; color: #666; font-size: 0.85em;">(Optional)</span></label>
+            <button type="button" id="getLocationBtn" class="btn btn-outline" style="margin-bottom: 10px; font-size: 0.85rem; padding: 5px 10px; border: 1px solid var(--border); border-radius: 5px; cursor: pointer;">
+                <i class="fas fa-location-crosshairs"></i> Get Current Location
+            </button>
+            <div id="map" style="height: 250px; border-radius: 8px; border: 1px solid var(--border); z-index: 1;"></div>
+            <input type="hidden" name="latitude" id="latitude">
+            <input type="hidden" name="longitude" id="longitude">
+        </div>
+
+        <button type="submit" class="btn-submit" style="background: var(--primary); color: white; padding: 1rem; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); font-family: inherit;">
+            <i class="fas fa-bullhorn"></i> Broadcast Request
+        </button>
+    </form>
+</div>
+</div>
+
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var map = L.map('map').setView([10.8505, 76.2711], 7); // Default to Kerala
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker;
+
+        map.on('click', function(e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+            
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng).addTo(map);
+            }
+            
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+        });
+
+        document.getElementById('getLocationBtn').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+                    var latlng = L.latLng(lat, lng);
+                    
+                    map.setView(latlng, 15);
+                    
+                    if (marker) {
+                        marker.setLatLng(latlng);
+                    } else {
+                        marker = L.marker(latlng).addTo(map);
+                    }
+                    
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lng;
+                }, function() {
+                    alert("Unable to retrieve your location.");
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        });
+    });
+</script>
+
+{% endblock %}

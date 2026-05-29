@@ -1,0 +1,103 @@
+{% extends 'VOLUNTEER/commen.html' %}
+
+{% block title %}Assigned Pickups - ERA System{% endblock %}
+
+{% block volunteer_body %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+    <div>
+        <h1 style="font-family: 'Outfit'; font-size: 2rem;">Assigned Donation Pickups</h1>
+        <p style="color: var(--text-muted);">View and manage donation pickups assigned to you in <strong>{{ volunteer.district.name }}</strong> district.</p>
+    </div>
+</div>
+
+<div class="card" style="background: #ffffff; border-radius: 16px; border: 1px solid var(--border); padding: 1.5rem; box-shadow: var(--shadow); overflow-x: auto;">
+    {% if donations %}
+    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; min-width: 800px;">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--border); color: var(--text-muted); font-weight: 600;">
+                <th style="padding: 1rem 0.75rem;">Donor Info</th>
+                <th style="padding: 1rem 0.75rem;">Item Details</th>
+                <th style="padding: 1rem 0.75rem; text-align: center;">Quantity</th>
+                <th style="padding: 1rem 0.75rem;">Pickup Address</th>
+                <th style="padding: 1rem 0.75rem; text-align: center;">Status</th>
+                <th style="padding: 1rem 0.75rem; text-align: center;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in donations %}
+            <tr style="border-bottom: 1px solid var(--border); transition: background-color 0.2s;">
+                <!-- Donor Info -->
+                <td style="padding: 1rem 0.75rem;">
+                    <div style="font-weight: 600; color: var(--text-main);">{{ d.donor_name }}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">
+                        <span style="background: #eff6ff; color: #2563eb; padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 0.75rem; border: 1px solid #dbeafe;">{{ d.donor_type }}</span>
+                        &bull; {{ d.donor_phone }}
+                    </div>
+                </td>
+                
+                <!-- Item Details -->
+                <td style="padding: 1rem 0.75rem;">
+                    <div style="font-weight: 600; color: var(--text-main);">{{ d.requirement.item_name }}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Category: {{ d.requirement.category.name }}</div>
+                </td>
+                
+                <!-- Quantity -->
+                <td style="padding: 1rem 0.75rem; text-align: center; font-weight: 700; color: var(--primary); font-size: 1rem;">
+                    {{ d.quantity }} {{ d.requirement.unit }}
+                </td>
+                
+                <!-- Pickup Address -->
+                <td style="padding: 1rem 0.75rem; max-width: 250px; font-size: 0.85rem; color: var(--text-muted); white-space: normal; word-break: break-word;">
+                    <strong>Address:</strong> {{ d.pickup_address }}{% if d.latitude and d.longitude %} <a href="https://www.google.com/maps?q={{ d.latitude }},{{ d.longitude }}" target="_blank" style="font-size: 0.85rem; color: var(--primary); text-decoration: none; margin-left: 10px;"><i class="fas fa-map-marker-alt"></i> View on Map</a>{% endif %}
+                </td>
+                
+                <!-- Status -->
+                <td style="padding: 1rem 0.75rem; text-align: center;">
+                    {% if d.status == 'Assigned' %}
+                    <span style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-clock"></i> Assigned</span>
+                    {% elif d.status == 'Collected' %}
+                    <span style="background: #fae8ff; color: #a21caf; border: 1px solid #f5d0fe; padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-truck"></i> Collected</span>
+                    {% elif d.status == 'Completed' %}
+                    <span style="background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-check-double"></i> Completed</span>
+                    {% else %}
+                    <span style="background: #f1f5f9; color: #64748b; border: 1px solid var(--border); padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;">{{ d.status }}</span>
+                    {% endif %}
+                </td>
+                
+                <!-- Actions -->
+                <td style="padding: 1rem 0.75rem; text-align: center;">
+                    {% if d.status == 'Assigned' %}
+                    <form method="POST" action="/volunteer_update_donation/" style="display: inline-block;">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="{{ d.id }}">
+                        <input type="hidden" name="act" value="Collected">
+                        <button type="submit" class="btn btn-primary" style="background: #0284c7; color: white; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-dolly"></i> Mark Collected
+                        </button>
+                    </form>
+                    {% elif d.status == 'Collected' %}
+                    <form method="POST" action="/volunteer_update_donation/" style="display: inline-block;">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="{{ d.id }}">
+                        <input type="hidden" name="act" value="Completed">
+                        <button type="submit" class="btn btn-primary" style="background: #10b981; color: white; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-circle-check"></i> Mark Completed
+                        </button>
+                    </form>
+                    {% else %}
+                    <span style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;"><i class="fas fa-lock"></i> No Actions</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align: center; padding: 3rem 1.5rem; color: var(--text-muted);">
+        <i class="fas fa-truck-pickup" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1.5rem;"></i>
+        <h3 style="font-family: 'Outfit'; color: var(--text-main); margin-bottom: 0.5rem;">No Assigned Pickups</h3>
+        <p style="font-size: 0.9rem; max-width: 450px; margin: 0 auto;">There are no donation pickups assigned to you currently. Control center officers will assign you when citizens request assistance.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
